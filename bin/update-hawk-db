@@ -1,3 +1,90 @@
 #!/usr/bin/env node
 
-console.log("Hello, Hawk!");
+"use strict";
+
+var async = require("async");
+var AWS = require("aws-sdk");
+
+var AWSConfig = require("../config/aws");
+var logger = require("../config/logger");
+
+AWS.config.region = AWSConfig.region;
+
+var startInstance = function(ec2, instanceId, callback) {
+  logger.info("Starting instance %s", instanceId);
+
+  var params = {
+    InstanceIds: [ instanceId ]
+  };
+
+  ec2.startInstances(params, function(err, data) {
+    if (err) {
+      logger.info("Failed to start instance %s", instanceId);
+      callback(err);
+    } else {
+      logger.info("Successfully started instance %s", instanceId);
+      logger.debug(data);
+      callback(null, data);
+    }
+  });
+};
+
+var waitForInstanceStatus = function(ec2, instanceId, status, callback) {
+  logger.info("Waiting for instance %s to reach status %s", instanceId, status);
+
+  var params = {
+    InstanceIds: [ instanceId ]
+  };
+
+  ec2.waitFor(status, params, function(err, data) {
+    if (err) {
+      logger.info("Failed to wait for instance %s to reach status %s", instanceId, status);
+      callback(err);
+    } else {
+      logger.info("Instance %s has status %s", instanceId, status);
+      logger.debug(data);
+      callback(null, data);
+    }
+  });
+};
+
+var stopInstance = function(ec2, instanceId, callback) {
+  logger.info("Stopping instance %s", instanceId);
+
+  var params = {
+    InstanceIds: [ instanceId ]
+  };
+
+  ec2.stopInstances(params, function(err, data) {
+    if (err) {
+      logger.info("Failed to stop instance " + instanceId);
+      callback(err);
+    } else {
+      logger.info("Successfully stopped instance " + instanceId);
+      logger.debug(data);
+      callback(null, data);
+    }
+  });
+};
+
+var ec2 = new AWS.EC2({ apiVersion: AWSConfig.EC2.apiVersion });
+
+async.series({
+  startMusicBrainz: function(callback) {
+    startInstance(ec2, AWSConfig.musicBrainz.instanceId, callback);
+  },
+  waitUntilMusicBrainzRunning: function(callback) {
+    waitForInstanceStatus(ec2, AWSConfig.musicBrainz.instanceId, "instanceRunning", callback);
+  },
+  stopMusicBrainz: function(callback) {
+    stopInstance(ec2, AWSConfig.musicBrainz.instanceId, callback);
+  },
+  waitUntilMusicBrainzStopped: function(callback) {
+    waitForInstanceStatus(ec2, AWSConfig.musicBrainz.instanceId, "instanceStopped", callback);
+  },
+},
+function (err) {
+  if (err) {
+    console.log(err, err.stack);
+  }
+});

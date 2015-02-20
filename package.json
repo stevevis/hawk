@@ -23,6 +23,8 @@
     "url": "https://github.com/stevevis/hawk"
   },
   "dependencies": {
+    "async": "^0.9.0",
+    "aws-sdk": "^2.1.12",
     "koa": "^0.18.0",
     "koa-error": "^1.1.3",
     "koa-logger": "^1.2.2",

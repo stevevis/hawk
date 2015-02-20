@@ -1,0 +1,48 @@
+{
+  "name": "hawk",
+  "version": "0.0.1",
+  "description": "Watch your favorite bands like a hawk",
+  "author": "Steve Viselli",
+  "private": "true",
+  "main": "app.js",
+  "bin": {
+    "update-hawk-db": "./bin/update-hawk-db"
+  },
+  "scripts": {
+    "watch": "watchify app.js -o public/js/bundle.js -v",
+    "browserify": "browserify app.js | uglifyjs > public/js/bundle.js",
+    "build": "npm run browserify ",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npm run watch & nodemon --harmony server.js",
+    "start": "npm run build && NODE_ENV=production forever start --uid \"hawk\" -c \"node --harmony\" -a server.js",
+    "stop": "forever stop hawk",
+    "update": "git pull && npm run stop && npm install && npm run start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stevevis/hawk"
+  },
+  "dependencies": {
+    "koa": "^0.18.0",
+    "koa-error": "^1.1.3",
+    "koa-logger": "^1.2.2",
+    "koa-response-time": "^1.0.2",
+    "koa-router": "^4.2.0",
+    "koa-static": "^1.4.9",
+    "koa-views": "^2.1.2",
+    "react": "^0.12.2",
+    "winston": "^0.9.0"
+  },
+  "devDependencies": {
+    "browserify": "^8.1.3",
+    "nodemon": "^1.3.7",
+    "reactify": "^1.0.0",
+    "uglify-js": "^2.4.16",
+    "watchify": "^2.3.0"
+  },
+  "browserify": {
+    "transform": [
+      "reactify"
+    ]
+  }
+}

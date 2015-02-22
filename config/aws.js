@@ -6,7 +6,9 @@ var AWSConfig = {
     apiVersion: "2014-10-02"
   },
   musicBrainz: {
-    instanceId: "i-7b151e8a"
+    instanceId: "i-7b151e8a",
+    username: "ubuntu",
+    password: "Mu5icBra1nz"
   }
 };
 

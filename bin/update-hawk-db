@@ -3,88 +3,24 @@
 "use strict";
 
 var async = require("async");
-var AWS = require("aws-sdk");
 var mongoose = require("mongoose");
-
 var argv = require("yargs")
     .default("stop", true)
     .argv;
 
+// Config
 var logger = require("../config/logger");
 var AWSConfig = require("../config/aws");
 var mongoConfig = require("../config/mongo");
+
+// Models
 var Artist = require("../models/Artist");
 var Release = require("../models/Release");
+
+// Services
+var EC2Service = require("../services/EC2Service");
+var SNSService = require("../services/EC2Service");
 var MusicBrainzService = require("../services/MusicBrainzService");
-
-AWS.config.region = AWSConfig.region;
-var ec2 = new AWS.EC2({ apiVersion: AWSConfig.EC2.apiVersion });
-
-/**
- * Start up an EC2 instance.
- */
-var startInstance = function(ec2, instanceId, callback) {
-  logger.info("Starting instance %s", instanceId);
-
-  var params = {
-    InstanceIds: [ instanceId ]
-  };
-
-  ec2.startInstances(params, function(err, data) {
-    if (err) {
-      logger.info("Failed to start instance %s", instanceId);
-      callback(err);
-    } else {
-      logger.info("Successfully started instance %s", instanceId);
-      logger.debug(data);
-      callback(null, data);
-    }
-  });
-};
-
-/**
- * Wait for an EC2 instance to reach a particular instance status e.g. running, stopped.
- */
-var waitForInstanceStatus = function(ec2, instanceId, status, callback) {
-  logger.info("Waiting for instance %s to reach status %s", instanceId, status);
-
-  var params = {
-    InstanceIds: [ instanceId ]
-  };
-
-  ec2.waitFor(status, params, function(err, data) {
-    if (err) {
-      logger.info("Failed to wait for instance %s to reach status %s", instanceId, status);
-      callback(err);
-    } else {
-      logger.info("Instance %s has status %s", instanceId, status);
-      logger.debug(data);
-      callback(null, data);
-    }
-  });
-};
-
-/**
- * Stop an EC2 instance.
- */
-var stopInstance = function(ec2, instanceId, callback) {
-  logger.info("Stopping instance %s", instanceId);
-
-  var params = {
-    InstanceIds: [ instanceId ]
-  };
-
-  ec2.stopInstances(params, function(err, data) {
-    if (err) {
-      logger.info("Failed to stop instance " + instanceId);
-      callback(err);
-    } else {
-      logger.info("Successfully stopped instance " + instanceId);
-      logger.debug(data);
-      callback(null, data);
-    }
-  });
-};
 
 /**
  * Fetch the releases for an artist from the MusicBrainz database, then update the Hawk database with any new releases.
@@ -135,10 +71,13 @@ var updateHawkDB = function(callback) {
           callback(null);
         }
       });
+    },
+    function(callback) {
+      // Send an SNS notification with some stats about the update e.g. how many new artists/releases
+      SNSService.sendDatabaseUpdateMessage("Finished Updating Hawk DB", "TODO: Report update stats", callback);
     }
   ], function (err) {
     if (err) {
-      logger.error(err, err.stack);
       callback(err);
     } else {
       logger.info("Finished updating Hawk database");
@@ -153,17 +92,20 @@ var updateHawkDB = function(callback) {
 
 async.series({
   startMusicBrainz: function(callback) {
-    startInstance(ec2, AWSConfig.musicBrainz.instanceId, callback);
+    EC2Service.startInstance(AWSConfig.EC2.musicBrainz.instanceId, callback);
   },
   waitUntilMusicBrainzRunning: function(callback) {
-    waitForInstanceStatus(ec2, AWSConfig.musicBrainz.instanceId, "instanceRunning", callback);
+    EC2Service.waitForInstanceStatus(AWSConfig.EC2.musicBrainz.instanceId, "instanceRunning", callback);
+  },
+  createMusicBrainzDB: function(callback) {
+    MusicBrainzService.createDatabase(callback);
   },
   updateHawkDB: function(callback) {
     updateHawkDB(callback);
   },
   stopMusicBrainz: function(callback) {
     if (argv.stop) {
-      stopInstance(ec2, AWSConfig.musicBrainz.instanceId, callback);
+      EC2Service.stopInstance(AWSConfig.EC2.musicBrainz.instanceId, callback);
     } else {
       logger.info("Skipping stop MusicBrainz database");
       callback(null);
@@ -171,7 +113,7 @@ async.series({
   },
   waitUntilMusicBrainzStopped: function(callback) {
     if (argv.stop) {
-      waitForInstanceStatus(ec2, AWSConfig.musicBrainz.instanceId, "instanceStopped", callback);
+      EC2Service.waitForInstanceStatus(AWSConfig.EC2.musicBrainz.instanceId, "instanceStopped", callback);
     } else {
       logger.info("Skipping waiting for MusicBrainz database to stop");
       callback(null);
@@ -179,7 +121,8 @@ async.series({
   }
 }, function (err) {
   if (err) {
-    logger.error(err, err.stack);
+    logger.error(err);
+    process.exit(1);
   } else {
     process.exit(0);
   }

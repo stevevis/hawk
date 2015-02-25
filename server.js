@@ -2,10 +2,12 @@
 
 // Dependencies
 var koa = require("koa");
-var views = require("koa-views");
-var koaStatic = require("koa-static");
+var path = require("path");
+var koaViews = require("koa-views");
+var staticCache = require("koa-static-cache");
 var errorHandler = require("koa-error");
 var requestLogger = require("koa-logger");
+var livereload = require("koa-livereload");
 var responseTime = require("koa-response-time");
 
 // Local dependencies
@@ -19,13 +21,16 @@ var port = process.env.PORT || 3000;
 // Setup development middleware
 if (app.env === "development") {
   app.use(requestLogger());
+  app.use(livereload());
 }
 
 // Setup middleware
 app.use(responseTime());
 app.use(errorHandler());
-app.use(views("views"));
-app.use(koaStatic(__dirname + "/public/"));
+app.use(koaViews(path.join(__dirname, "views")));
+app.use(staticCache(path.join(__dirname, "dist"), {
+  gzip: true
+}));
 
 // Initialize the router
 routes(app);

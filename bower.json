@@ -1,0 +1,22 @@
+{
+  "name": "hawk",
+  "version": "0.0.1",
+  "homepage": "https://github.com/stevevis/hawk",
+  "authors": [
+    "Steve Viselli <steve.viselli@gmail.com>"
+  ],
+  "description": "Watch your favourite bands like a hawk!",
+  "main": "app.js",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "foundation": "~5.5.1"
+  }
+}

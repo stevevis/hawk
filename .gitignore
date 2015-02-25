@@ -41,4 +41,6 @@ bower_components
 .sass-cache
 *.css.map
 
-public/js/bundle.js
+
+### Hawk ###
+dist

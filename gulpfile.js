@@ -14,11 +14,13 @@ var prod = process.env.NODE_ENV === "production";
 var src = {
   app: "./app.js",
   style: "./styles/main.scss",
+  scss: "./styles/**/*.scss",
   img: "./images/**/*",
   views: "./views/**/*",
   server: "./server.js",
   vendor: {
     css: [
+
     ],
     head: [
       "./bower_components/modernizr/modernizr.js"
@@ -26,10 +28,16 @@ var src = {
     js: [
       "./bower_components/jquery/dist/jquery.js",
       "./bower_components/fastclick/lib/fastclick.js",
-      "./bower_components/foundation/js/foundation.js"
+      "./bower_components/foundation/js/foundation.js",
+      "./bower_components/foundation/js/foundation/foundation.topbar.js"
     ]
   }
 };
+
+var scssLoadPath = [
+  "styles",
+  "bower_components/foundation/scss"
+];
 
 var dist = {
   css: "./dist/css",
@@ -141,7 +149,8 @@ gulp.task("browserify-watch", function() {
  */
 gulp.task("scss", function() {
   return plugins.rubySass(src.style, {
-    loadPath: ["bower_components/foundation/scss"]
+    loadPath: scssLoadPath,
+    compass: true
   })
   .pipe(plugins.if(prod, plugins.minifyCss()))
   .pipe(gulp.dest(dist.css));
@@ -178,7 +187,7 @@ gulp.task("js", function() {
  */
 gulp.task("watch", ["browserify-watch", "scss"], function() {
   // Compile and minify our sscs stylesheets
-  gulp.watch(src.style, ["scss"]);
+  gulp.watch(src.scss, ["scss"]);
 
   // Create LiveReload server and watch for changes to front-end code
   plugins.livereload.listen();

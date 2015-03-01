@@ -2,10 +2,12 @@
 
 "use strict";
 
+var _ = require("lodash");
 var async = require("async");
 var mongoose = require("mongoose");
 var argv = require("yargs")
     .default("stop", true)
+    .default("create", true)
     .argv;
 
 // Config
@@ -15,45 +17,96 @@ var mongoConfig = require("../config/mongo");
 
 // Models
 var Artist = require("../models/Artist");
-var Release = require("../models/Release");
+var DatabaseUpdate = require("../models/DatabaseUpdate");
 
 // Services
 var EC2Service = require("../services/EC2Service");
-var SNSService = require("../services/EC2Service");
+var SNSService = require("../services/SNSService");
 var MusicBrainzService = require("../services/MusicBrainzService");
+
+// The stats for the last update run.
+var lastUpdateStats;
+
+// Stats for the current update run
+var stats = {
+  version: "",
+  totalArtists: 0,
+  artistsUpdated: 0,
+  newArtists: 0,
+  totalReleases: 0,
+  newReleases: 0
+};
+
+// Ignore artists with these names
+var ignore = [
+  "Various Artists",
+  "[unknown]"
+];
+
+// Connect to Mongo
+mongoose.connect(mongoConfig.uri, mongoConfig.options);
+
+/**
+ * Log the progress of the database update as % of artists completed.
+ */
+function logProgress() {
+  logger.info("Updated %s out of %s artists (%s\%)", stats.artistsUpdated, stats.totalArtists, 
+      Math.floor(stats.artistsUpdated / stats.totalArtists * 100));
+}
 
 /**
  * Fetch the releases for an artist from the MusicBrainz database, then update the Hawk database with any new releases.
  */
 var updateArtist = function(artist, callback) {
-  var artistModel = new Artist(artist);
+  if (ignore.indexOf(artist.name) > -1) {
+    logger.info("Skipping artist %s", artist.name);
+    return callback(null);
+  }
 
   MusicBrainzService.getReleasesForArtist(artist._id, function(err, releases) {
-    var releaseModels = releases.map(function(release) {
-      return new Release(release);
-    });
-
     artist.releases = releases;
-    artistModel.releases = releaseModels;
-    Artist.update({ _id: artist._id }, artist, { upsert: true }, function(err) {
+
+    Artist.findById(artist._id, function(err, artistModel) {
       if (err) {
-        logger.error("Failed to save artist and releases", err);
-        callback(err);
-      } else {
-        logger.info("Saved artist " + artist.name + " with " + releases.length + " releases");
-        callback(null);
+        logger.error("Could not get artist %s", artist.name);
+        return callback(err);
       }
+
+      if (artistModel) {
+        // The number of releases from the MusicBrainz DB minus the number of releases that existed in both the Hawk
+        // and the MusicBrainz DB is the number of new releases.
+        var oldReleases = artistModel.releases.map(function(release) { return release._id; });
+        var newReleases = releases.map(function(release) { return release._id; });
+        stats.newReleases += (newReleases.length - _.intersection(oldReleases, newReleases).length);
+        stats.totalReleases += newReleases.length;
+      } else {
+        stats.newArtists++;
+        stats.newReleases += releases.length;
+        stats.totalReleases += releases.length;
+      }
+
+      Artist.update({ _id: artist._id }, artist, { upsert: true }, function(err) {
+        if (err) {
+          logger.error("Failed to save artist %s", artist.name, err);
+          callback(err);
+        } else {
+          logger.debug("Saved artist %s with %d releases", artist.name, releases.length);
+          stats.artistsUpdated++;
+          callback(null);
+        }
+      });
     });
   });
 };
 
 /**
- * Fetch the artists from the MusicBrainz database then update teh release for each one.
+ * Fetch the artists from the MusicBrainz database then update the releases for each one.
  */
 var updateHawkDB = function(callback) {
   logger.info("Updating Hawk database");
 
-  mongoose.connect(mongoConfig.uri, mongoConfig.options);
+  // Interval object for the % complete logging
+  var progress;
 
   async.waterfall([
     function(callback) {
@@ -61,8 +114,10 @@ var updateHawkDB = function(callback) {
     },
     function(artists, callback) {
       logger.info("Found %d artists in MusicBrainz database", artists.length);
+      stats.totalArtists = artists.length;
+      progress = setInterval(logProgress, 10000);
 
-      async.each(artists, updateArtist, function(err) {
+      async.eachLimit(artists, 40, updateArtist, function(err) {
         if (err) {
           logger.error("Failed to update all artists", err);
           callback(err);
@@ -73,14 +128,18 @@ var updateHawkDB = function(callback) {
       });
     },
     function(callback) {
+      clearInterval(progress);
+      logProgress();
+      logger.info("Found %d new artists", stats.newArtists);
+      logger.info("Found %d new releases", stats.newReleases);
+
       // Send an SNS notification with some stats about the update e.g. how many new artists/releases
-      SNSService.sendDatabaseUpdateMessage("Finished Updating Hawk DB", "TODO: Report update stats", callback);
+      SNSService.sendDatabaseUpdateMessage("Finished Updating Hawk DB", JSON.stringify(stats, null, "\t"), callback, true);
     }
   ], function (err) {
     if (err) {
       callback(err);
     } else {
-      logger.info("Finished updating Hawk database");
       callback(null);
     }
   });
@@ -88,8 +147,7 @@ var updateHawkDB = function(callback) {
 
 /**
  * Business time.
- */
-
+ */ 
 async.series({
   startMusicBrainz: function(callback) {
     EC2Service.startInstance(AWSConfig.EC2.musicBrainz.instanceId, callback);
@@ -97,33 +155,71 @@ async.series({
   waitUntilMusicBrainzRunning: function(callback) {
     EC2Service.waitForInstanceStatus(AWSConfig.EC2.musicBrainz.instanceId, "instanceRunning", callback);
   },
+  getLastUpdateStats: function(callback) {
+    DatabaseUpdate.find().limit(1).sort("-updateDate").exec(function(err, stats) {
+      if (err) {
+        callback(err);
+      } else {
+        lastUpdateStats = stats[0];
+        callback(null);
+      }
+    });
+  },
   createMusicBrainzDB: function(callback) {
-    MusicBrainzService.createDatabase(callback);
+    var lastUpdateVersion = lastUpdateStats ? lastUpdateStats.version : "";
+    logger.info("Last database update was %s", lastUpdateVersion);
+    
+    if (!argv.create) {
+      logger.info("Skipping creating a new MusicBrainz database, using last update %s", lastUpdateVersion);
+      stats.version = lastUpdateVersion;
+      return callback(null);
+    }
+
+    MusicBrainzService.createDatabase(lastUpdateVersion, function(err, version) {
+      if (err) {
+        callback(err);
+      } else {
+        stats.version = version;
+        callback(null);
+      }
+    });
   },
   updateHawkDB: function(callback) {
+    stats.version = "20150228-002426";
     updateHawkDB(callback);
   },
-  stopMusicBrainz: function(callback) {
-    if (argv.stop) {
-      EC2Service.stopInstance(AWSConfig.EC2.musicBrainz.instanceId, callback);
-    } else {
-      logger.info("Skipping stop MusicBrainz database");
-      callback(null);
-    }
-  },
-  waitUntilMusicBrainzStopped: function(callback) {
-    if (argv.stop) {
-      EC2Service.waitForInstanceStatus(AWSConfig.EC2.musicBrainz.instanceId, "instanceStopped", callback);
-    } else {
-      logger.info("Skipping waiting for MusicBrainz database to stop");
-      callback(null);
-    }
+  saveUpdateStats: function(callback) {
+    var currentUpdateStats = new DatabaseUpdate(stats);
+    currentUpdateStats.save(function(err) {
+      if (err) {
+        callback(err);
+      } else {
+        callback(null);
+      }
+    });
   }
-}, function (err) {
-  if (err) {
-    logger.error(err);
-    process.exit(1);
-  } else {
-    process.exit(0);
-  }
+}, function(err) {
+  var exitCode = err ? 1 : 0;
+
+  async.parallel({
+    sendError: function(callback) {
+      if (err) {
+        logger.error(err.message);
+        SNSService.sendDatabaseUpdateMessage("Failed to Update Hawk DB", err.message, callback, true);
+      } else {
+        logger.info("Successfully updated Hawk DB");
+        callback(null);
+      }
+    },
+    stopMusicBrainz: function(callback) {
+      if (argv.stop) {
+        EC2Service.stopInstance(AWSConfig.EC2.musicBrainz.instanceId, callback, true);
+      } else {
+        logger.info("Skipping stop MusicBrainz database");
+        callback(null);
+      }
+    }
+  }, function() {
+    process.exit(exitCode);
+  });
 });

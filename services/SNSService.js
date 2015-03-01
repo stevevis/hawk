@@ -9,17 +9,19 @@ var SNSService = function() {
   this.sns = new AWS.SNS({ apiVersion: AWSConfig.SNS.apiVersion });
 };
 
-function sendMessage(sns, topic, subject, message, callback) {
+function sendMessage(sns, topic, subject, message, callback, ignoreError) {
+  logger.info("Sending message subject '%s' to topic '%s'", subject, topic);
+
   var params = {
     TopicArn: topic,
-    Subject: subject,
-    Message: message
+    Subject: subject ? subject : "No subject",
+    Message: message ? message : "No message"
   };
 
   sns.publish(params, function(err) {
     if (err) {
-      logger.error("Failed to send message '%s' to topic '%s'", err);
-      callback(err);
+      logger.error("Failed to send message", err);
+      callback(ignoreError ? null : err);
     } else {
       logger.info("Successfully sent message");
       callback(null);
@@ -27,8 +29,8 @@ function sendMessage(sns, topic, subject, message, callback) {
   });
 }
 
-SNSService.prototype.sendDatabaseUpdateMessage = function(subject, message, callback) {
-  sendMessage(this.sns, AWSConfig.SNS.databaseUpdateTopic, subject, message, callback);
+SNSService.prototype.sendDatabaseUpdateMessage = function(subject, message, callback, ignoreError) {
+  sendMessage(this.sns, AWSConfig.SNS.databaseUpdateTopic, subject, message, callback, ignoreError);
 };
 
 module.exports = new SNSService();

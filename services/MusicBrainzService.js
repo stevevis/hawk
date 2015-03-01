@@ -22,6 +22,9 @@ var connectConfig = {
   readyTimeout: 60000
 };
 
+/**
+ * Get an SSH client that is ready to execute commands on the MusicBrainz DB server.
+ */
 function getSSHClient(callback) {
   logger.info("Connecting to MusicBrainz DB server");
   var client = new Client();
@@ -31,6 +34,9 @@ function getSSHClient(callback) {
   return client;
 }
 
+/**
+ * Exec the given command on the given SSH client, return the output in the callback.
+ */
 function execSSHClient(client, command, callback) {
   logger.info("Executing command `%s`", command);
 
@@ -46,7 +52,7 @@ function execSSHClient(client, command, callback) {
 
     stream.on("close", function() {
       buffer = buffer.trim();
-      logger.info("[Output] `%s`", buffer);
+      logger.info("[Output]\n`%s`", buffer);
       callback(null, buffer);
     }).on("data", function(data) {
       buffer += data;
@@ -56,6 +62,9 @@ function execSSHClient(client, command, callback) {
   });
 }
 
+/**
+ * Continue to execute the given command on the given SSH client until the output matches the expected value.
+ */
 function execSSHClientUntil(client, command, expected, delay, callback) {
   logger.info("Executing command `%s` until output is `%s`", command, expected);
 
@@ -77,16 +86,22 @@ var MusicBrainzService = function() {};
 
 /**
  * Create a fresh Postgres MusicBrainz database on the server by downloading the latest database dumps and running the
- * initialize database script. Sends an SNS notification when it's done.
+ * initialize database script. Sends an SNS notification when it's done. Skip creating the database if the latest
+ * database dumps are the same version as lastVersion.
  */
-MusicBrainzService.prototype.createDatabase = function(callback) {
-  var client = null;
+MusicBrainzService.prototype.createDatabase = function(lastVersion, callback) {
+  var client = null,
+      version = "";
+
   async.series({
     getClient: function(callback) {
       client = getSSHClient(callback);
     },
     checkIfRunning: function(callback) {
       execSSHClient(client, pgConfig.commands.checkInitDbProcess, function(err, output) {
+        if (err) {
+          return callback (err);
+        }
         if (output !== "0") {
           callback(new Error("Update job is already running"));
         } else {
@@ -94,11 +109,22 @@ MusicBrainzService.prototype.createDatabase = function(callback) {
         }
       });
     },
+    downloadDumps: function(callback) {
+      execSSHClient(client, pgConfig.commands.downloadDumps + " " + lastVersion, function(err, output) {
+        if (err) {
+          return callback (err);
+        }
+        // The first line of the output will look like "Latest 20150225-002259", extract the version number
+        version = output.split("\n")[0].split(" ")[1];
+        if (lastVersion === version) {
+          callback(new Error("Skipping creating new database since there are no new database dumps"), version);
+        } else {
+          callback(null);
+        }
+      });
+    },
     cleanup: function(callback) {
       execSSHClient(client, pgConfig.commands.cleanup, callback);
-    },
-    downloadDumps: function(callback) {
-      execSSHClient(client, pgConfig.commands.downloadDumps, callback);
     },
     createDatabase: function(callback) {
       execSSHClient(client, pgConfig.commands.createDatabase, callback);
@@ -110,17 +136,17 @@ MusicBrainzService.prototype.createDatabase = function(callback) {
       execSSHClient(client, pgConfig.commands.getLastLineOfLog, function(err, output) {
         if (err) {
           callback(err);
+        } else {
+          // Send an SNS notification with the output from the log file, ignore any errors
+          SNSService.sendDatabaseUpdateMessage("Finished Creating MusicBrainz DB", output, callback, true);
         }
-
-        // Send an SNS notification with the output from the log file
-        SNSService.sendDatabaseUpdateMessage("Finished Creating MusicBrainz DB", output, callback);
       });
     }
-  }, function (err) {
+  }, function(err) {
     if (err) {
       callback(err);
     } else {
-      callback(null);
+      callback(null, version);
     }
   });
 };
@@ -130,9 +156,9 @@ MusicBrainzService.prototype.getArtists = function(callback) {
 
   pg.connect(pgConfig.connect, function(err, client, done) {
     if (err) {
-      logger.error("Could not connect to musicbrainz database: %j", err);
       done();
-      callback(err);
+      logger.error("Could not connect to musicbrainz database: %j", err);
+      return callback(err);
     }
 
     var statement = {
@@ -142,26 +168,25 @@ MusicBrainzService.prototype.getArtists = function(callback) {
     };
 
     client.query(statement, function(err, result) {
+      done();
       if (err) {
         logger.error("Could not get artists from musicbrainz database: %j", err);
-        done();
         callback(err);
+      } else {
+        callback(null, result.rows);
       }
-
-      done();
-      callback(null, result.rows);
     });
   });
 };
 
 MusicBrainzService.prototype.getReleasesForArtist = function(artistId, callback) {
-  logger.debug("Getting release for artist %d from MusicBrainz DB", artistId);
+  logger.debug("Getting releases for artist %d from MusicBrainz DB", artistId);
 
   pg.connect(pgConfig.connect, function(err, client, done) {
     if (err) {
-      logger.error("Could not connect to musicbrainz postgres database: %j", err);
       done();
-      callback(null);
+      logger.error("Could not connect to musicbrainz postgres database: %j", err);
+      return callback(null);
     }
 
     var statement = {
@@ -171,14 +196,13 @@ MusicBrainzService.prototype.getReleasesForArtist = function(artistId, callback)
     };
 
     client.query(statement, function(err, result) {
+      done();
       if (err) {
         logger.error("Could not get releases for artist %d from musicbrainz database: %j", err);
-        done();
         callback(err);
+      } else {
+        callback(null, result.rows);
       }
-
-      done();
-      callback(null, result.rows);
     });
   });
 };

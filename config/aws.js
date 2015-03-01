@@ -7,7 +7,7 @@ var AWSConfig = {
     musicBrainz: {
       instanceId: "i-7b151e8a",
       privateIp: "172.30.1.209",
-      //privateIp: "54.85.70.179",
+      //privateIp: "52.0.223.32",
       username: "ubuntu",
       password: "Mu5icBra1nz"
     }

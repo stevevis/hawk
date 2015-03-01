@@ -30,6 +30,7 @@
     "koa-static": "^1.4.9",
     "koa-static-cache": "^3.0.1",
     "koa-views": "^2.1.2",
+    "lodash": "^3.3.1",
     "mongoose": "^4.0.0-rc2",
     "pg": "^4.2.0",
     "react": "^0.12.2",

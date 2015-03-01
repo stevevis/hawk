@@ -56,7 +56,7 @@ EC2Service.prototype.waitForInstanceStatus = function(instanceId, status, callba
 /**
  * Stop an EC2 instance.
  */
-EC2Service.prototype.stopInstance = function(instanceId, callback) {
+EC2Service.prototype.stopInstance = function(instanceId, callback, ignoreError) {
   logger.info("Stopping instance %s", instanceId);
 
   var params = {
@@ -66,7 +66,7 @@ EC2Service.prototype.stopInstance = function(instanceId, callback) {
   this.ec2.stopInstances(params, function(err, data) {
     if (err) {
       logger.info("Failed to stop instance " + instanceId);
-      callback(err);
+      callback(ignoreError ? null : err);
     } else {
       logger.info("Successfully stopped instance " + instanceId);
       logger.debug(data);

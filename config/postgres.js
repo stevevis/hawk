@@ -1,11 +1,12 @@
 "use strict";
 
+var _ = require("lodash");
 var pg = require("pg");
 
-var PostgresConfig = {
+var env = process.env.NODE_ENV = process.env.NODE_ENV || "development";
+
+var base = {
   connect: {
-    host: "172.30.1.209",
-    //host: "52.0.223.32",
     user: "musicbrainz",
     password: "musicbrainz",
     database: "musicbrainz_db"
@@ -19,7 +20,20 @@ var PostgresConfig = {
   }
 };
 
+var specific = {
+  development: {
+    connect: {
+      host: "52.0.157.30"
+    }
+  },
+  production: {
+    connect: {
+      host: "172.30.1.209"
+    }
+  }
+};
+
 // Increase the Postgres connection pool size
 pg.defaults.poolSize = 40;
 
-module.exports = PostgresConfig;
+module.exports = _.merge(base, specific[env]);

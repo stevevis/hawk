@@ -5,9 +5,11 @@
 var _ = require("lodash");
 var async = require("async");
 var mongoose = require("mongoose");
+var CronJob = require("cron").CronJob;
 var argv = require("yargs")
     .default("stop", true)
     .default("create", true)
+    .default("cron", true)
     .argv;
 
 // Config
@@ -102,7 +104,7 @@ var updateArtist = function(artist, callback) {
 /**
  * Fetch the artists from the MusicBrainz database then update the releases for each one.
  */
-var updateHawkDB = function(callback) {
+var getArtistsAndUpdate = function(callback) {
   logger.info("Updating Hawk database");
 
   // Interval object for the % complete logging
@@ -147,79 +149,95 @@ var updateHawkDB = function(callback) {
 
 /**
  * Business time.
- */ 
-async.series({
-  startMusicBrainz: function(callback) {
-    EC2Service.startInstance(AWSConfig.EC2.musicBrainz.instanceId, callback);
-  },
-  waitUntilMusicBrainzRunning: function(callback) {
-    EC2Service.waitForInstanceStatus(AWSConfig.EC2.musicBrainz.instanceId, "instanceRunning", callback);
-  },
-  getLastUpdateStats: function(callback) {
-    DatabaseUpdate.find().limit(1).sort("-updateDate").exec(function(err, stats) {
-      if (err) {
-        callback(err);
-      } else {
-        lastUpdateStats = stats[0];
-        callback(null);
-      }
-    });
-  },
-  createMusicBrainzDB: function(callback) {
-    var lastUpdateVersion = lastUpdateStats ? lastUpdateStats.version : "";
-    logger.info("Last database update was %s", lastUpdateVersion);
-    
-    if (!argv.create) {
-      logger.info("Skipping creating a new MusicBrainz database, using last update %s", lastUpdateVersion);
-      stats.version = lastUpdateVersion;
-      return callback(null);
-    }
-
-    MusicBrainzService.createDatabase(lastUpdateVersion, function(err, version) {
-      if (err) {
-        callback(err);
-      } else {
-        stats.version = version;
-        callback(null);
-      }
-    });
-  },
-  updateHawkDB: function(callback) {
-    stats.version = "20150228-002426";
-    updateHawkDB(callback);
-  },
-  saveUpdateStats: function(callback) {
-    var currentUpdateStats = new DatabaseUpdate(stats);
-    currentUpdateStats.save(function(err) {
-      if (err) {
-        callback(err);
-      } else {
-        callback(null);
-      }
-    });
-  }
-}, function(err) {
-  var exitCode = err ? 1 : 0;
-
-  async.parallel({
-    sendError: function(callback) {
-      if (err) {
-        logger.error(err.message);
-        SNSService.sendDatabaseUpdateMessage("Failed to Update Hawk DB", err.message, callback, true);
-      } else {
-        logger.info("Successfully updated Hawk DB");
-        callback(null);
-      }
+ */
+function updateHawkDB(exitOnFinish) {
+  async.series({
+    startMusicBrainz: function(callback) {
+      EC2Service.startInstance(AWSConfig.EC2.musicBrainz.instanceId, callback);
     },
-    stopMusicBrainz: function(callback) {
-      if (argv.stop) {
-        EC2Service.stopInstance(AWSConfig.EC2.musicBrainz.instanceId, callback, true);
-      } else {
-        logger.info("Skipping stop MusicBrainz database");
-        callback(null);
+    waitUntilMusicBrainzRunning: function(callback) {
+      EC2Service.waitForInstanceStatus(AWSConfig.EC2.musicBrainz.instanceId, "instanceRunning", callback);
+    },
+    getLastUpdateStats: function(callback) {
+      DatabaseUpdate.find().limit(1).sort("-updateDate").exec(function(err, stats) {
+        if (err) {
+          callback(err);
+        } else {
+          lastUpdateStats = stats[0];
+          callback(null);
+        }
+      });
+    },
+    createMusicBrainzDB: function(callback) {
+      var lastUpdateVersion = lastUpdateStats ? lastUpdateStats.version : "";
+      logger.info("Last database update was %s", lastUpdateVersion);
+      
+      if (!argv.create) {
+        logger.info("Skipping creating a new MusicBrainz database, using last update %s", lastUpdateVersion);
+        stats.version = lastUpdateVersion;
+        return callback(null);
       }
+
+      MusicBrainzService.createDatabase(lastUpdateVersion, function(err, version) {
+        if (err) {
+          callback(err);
+        } else {
+          stats.version = version;
+          callback(null);
+        }
+      });
+    },
+    updateArtists: function(callback) {
+      //stats.version = "20150228-002426";
+      getArtistsAndUpdate(callback);
+    },
+    saveUpdateStats: function(callback) {
+      var currentUpdateStats = new DatabaseUpdate(stats);
+      currentUpdateStats.save(function(err) {
+        if (err) {
+          callback(err);
+        } else {
+          callback(null);
+        }
+      });
     }
-  }, function() {
-    process.exit(exitCode);
+  }, function(err) {
+    var exitCode = err ? 1 : 0;
+
+    async.parallel({
+      sendError: function(callback) {
+        if (err) {
+          logger.error(err.message);
+          SNSService.sendDatabaseUpdateMessage("Failed to Update Hawk DB", err.message, callback, true);
+        } else {
+          logger.info("Successfully updated Hawk DB");
+          callback(null);
+        }
+      },
+      stopMusicBrainz: function(callback) {
+        if (argv.stop) {
+          EC2Service.stopInstance(AWSConfig.EC2.musicBrainz.instanceId, callback, true);
+        } else {
+          logger.info("Skipping stop MusicBrainz database");
+          callback(null);
+        }
+      }
+    }, function() {
+      logger.info("Finished with exit code %d", exitCode);
+      if (exitOnFinish) {
+        process.exit(exitCode);
+      }
+    });
   });
-});
+}
+
+if (argv.cron) {
+  new CronJob({
+    cronTime: "00 00 00 * * *",
+    onTick: function() {
+      updateHawkDB(false);
+    }
+  }).start();
+} else {
+  updateHawkDB(true);
+}

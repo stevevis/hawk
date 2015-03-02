@@ -1,0 +1,24 @@
+{
+  "apps" : [
+    {
+      "name": "hawk-server",
+      "script": "server.js",
+      "node_args": "--harmony",
+      "instances": 2,
+      "env_production": {
+        "NODE_ENV": "production"
+      }
+    }
+  ],
+
+  "deploy" : {
+    "production" : {
+      "user" : "ubuntu",
+      "host" : "52.1.155.101",
+      "ref"  : "origin/master",
+      "repo" : "https://github.com/stevevis/hawk.git",
+      "path" : "/var/www/hawk",
+      "post-deploy" : "npm run start"
+    }
+  }
+}

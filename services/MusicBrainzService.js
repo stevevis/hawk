@@ -26,7 +26,7 @@ var connectConfig = {
  * Get an SSH client that is ready to execute commands on the MusicBrainz DB server.
  */
 function getSSHClient(callback) {
-  logger.info("Connecting to MusicBrainz DB server");
+  logger.info("Connecting to MusicBrainz DB server %s", connectConfig.host);
   var client = new Client();
   client.on("ready", function() {
     callback(null);

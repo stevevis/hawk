@@ -6,6 +6,7 @@
       "node_args": "--harmony",
       "instances": 2,
       "env_production": {
+        "PORT": 4000,
         "NODE_ENV": "production"
       }
     }
@@ -18,7 +19,7 @@
       "ref"  : "origin/master",
       "repo" : "https://github.com/stevevis/hawk.git",
       "path" : "/var/www/hawk",
-      "post-deploy" : "npm run start"
+      "post-deploy" : "npm start"
     }
   }
 }

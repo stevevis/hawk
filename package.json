@@ -14,7 +14,9 @@
     "start": "npm run build && npm run pm2",
     "stop": "pm2 stop ecosystem.json && pm2 delete ecosystem.json",
     "update": "git pull && npm run build && npm run pm2",
-    "deploy": "pm2 deploy production"
+    "deploy": "pm2 deploy production",
+    "start-updater": "NODE_ENV=production pm2 start bin/update-hawk-db",
+    "stop-updater": "pm2 stop update-hawk-db && pm2 delete update-hawk-db"
   },
   "repository": {
     "type": "git",

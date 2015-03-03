@@ -1,6 +1,9 @@
 "use strict";
 
+var _ = require("lodash");
+var fs = require("fs");
 var del = require("del");
+var shortId = require("shortid");
 var gulp = require("gulp");
 var plugins = require("gulp-load-plugins")();
 var browserify = require("browserify");
@@ -8,9 +11,14 @@ var watchify = require("watchify");
 var reactify = require("reactify");
 var envify = require("envify");
 var source = require("vinyl-source-stream");
+var parallelize = require("concurrent-transform");
+var AWSConfig = require("./config/aws");
 
+var version = shortId.generate();
 var prod = process.env.NODE_ENV === "production";
+var cloudFrontUrl = "http://d2pxoitp5g519f.cloudfront.net";
 
+// Source files to read from
 var src = {
   app: "./app.js",
   style: "./styles/main.scss",
@@ -34,17 +42,22 @@ var src = {
   }
 };
 
+// Paths to load when compiling SCSS
 var scssLoadPath = [
   "styles",
   "bower_components/foundation/scss"
 ];
 
+// Directories to output compilied/minified/uglified assets
 var dist = {
+  root: "./dist",
   css: "./dist/css",
   js: "./dist/js",
-  img: "./dist/img"
+  img: "./dist/img",
+  views: "./dist/views"
 };
 
+// File names for compiled assets
 var out = {
   app: "app.js",
   style: "main.css",
@@ -54,14 +67,6 @@ var out = {
     js: "vendor.js"
   }
 };
-
-// Trigger a livereload when one of these files change
-// (And don't trigger a server restart)
-var watchReload = Object.keys(dist).map(function(key) {
-  return dist[key] + "/**/*";
-}).concat([
-  src.views
-]);
 
 /**
  * Returns a function that logs the error message and displays a notification.
@@ -102,7 +107,9 @@ function bundle(watch) {
       stream.pipe(plugins.streamify(plugins.uglify()));
     }
 
-    return stream.pipe(gulp.dest(dist.js)).pipe(plugins.notify("Finished browserifying " + out.app));
+    return stream
+      .pipe(gulp.dest(dist.js))
+      .pipe(plugins.notify("Finished browserifying " + out.app));
   };
 
   bundler.on("update", rebundle);
@@ -113,7 +120,7 @@ function bundle(watch) {
  * Gulp Tasks.
  */
 gulp.task("default", ["clean", "setDev", "vendors", "watch", "dev"]);
-gulp.task("build", ["clean", "setProd", "vendors", "browserify", "scss"]);
+gulp.task("build", ["clean", "setProd", "vendors", "browserify", "scss", "version-assets", "use-versioned-assets"]);
 
 gulp.task("setDev", function() {
   prod = false;
@@ -127,7 +134,7 @@ gulp.task("setProd", function() {
  * Delete our compiled assets.
  */
 gulp.task("clean", function() {
-  del.sync([dist.css, dist.js, dist.img]);
+  del.sync([dist.root]);
 });
 
 /**
@@ -183,15 +190,59 @@ gulp.task("js", function() {
 });
 
 /**
+ * Copy unmodified views to the dist directory (for development).
+ */
+gulp.task("views", function() {
+  return gulp.src(src.views)
+    .pipe(gulp.dest(dist.views));
+});
+
+/**
+ * Add version numbers to our compiled assets and publish them to cloudfront.
+ */
+gulp.task("version-assets", ["vendors", "browserify", "scss"], function() {
+  var publisher = plugins.awspublish.create(AWSConfig.S3.hawk);
+  var headers = AWSConfig.S3.headers;
+
+  return gulp.src(["./dist/css/*.css", "./dist/js/*.js"])
+    .pipe(plugins.revAll())
+    .pipe(plugins.rename(function(path) {
+      path.dirname += "/" + version;
+    }))
+    .pipe(plugins.awspublish.gzip())
+    .pipe(parallelize(publisher.publish(headers)))
+    .pipe(publisher.cache())
+    .pipe(plugins.awspublish.reporter())
+    .pipe(plugins.revAll.manifest({ fileName: "manifest.json" }))
+    .pipe(gulp.dest(dist.root));
+});
+
+/**
+ * Replace paths to local assets with paths to versioned assets in cloudfront.
+ */
+gulp.task("use-versioned-assets", ["version-assets"], function() {
+  var manifest = JSON.parse(fs.readFileSync("./dist/manifest.json", "utf8"));
+  var viewStream = gulp.src([src.views]);
+  _.forOwn(manifest, function(value, key) {
+    var ext = key.split(".").slice(-1)[0];
+    viewStream.pipe(plugins.replace(ext + "/" + key, cloudFrontUrl + "/" + value));
+  });
+  viewStream.pipe(gulp.dest(dist.views));
+});
+
+/**
  * Watch our javascript, styles and images and recompile on update.
  */
-gulp.task("watch", ["browserify-watch", "scss"], function() {
+gulp.task("watch", ["browserify-watch", "scss", "views"], function() {
   // Compile and minify our sscs stylesheets
   gulp.watch(src.scss, ["scss"]);
 
+  // Copy our views to the dist folder
+  gulp.watch(src.views, ["views"]);
+
   // Create LiveReload server and watch for changes to front-end code
   plugins.livereload.listen();
-  gulp.watch(watchReload).on("change", plugins.livereload.changed);
+  gulp.watch(dist.root + "/**/*").on("change", plugins.livereload.changed);
 
   plugins.util.log(plugins.util.colors.green("Watching for changes..."));
 });
@@ -211,7 +262,10 @@ gulp.task("dev", ["vendors", "watch"], function() {
     ignore: [
       ".git",
       "node_modules/**/node_modules",
-      "bower_components"
-    ].concat(watchReload)
+      "bower_components",
+      "components",
+      "views",
+      "dist"
+    ]
   });
 });

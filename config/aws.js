@@ -18,13 +18,22 @@ var base = {
     apiVersion: "2010-03-31",
     databaseUpdateTopic: "arn:aws:sns:us-east-1:982428925509:hawk-update-database"
   },
+  S3: {
+    hawk: {
+      bucket: "stevevis-hawk",
+      region: "us-east-1"
+    },
+    headers: {
+      "Cache-Control": "max-age=315360000, no-transform, public"
+    }
+  }
 };
 
 var specific = {
   development: {
     EC2: {
       musicBrainz: {
-        privateIp: "52.0.157.30"
+        privateIp: "54.152.99.254"
       }
     }
   },

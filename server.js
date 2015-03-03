@@ -20,17 +20,17 @@ var port = process.env.PORT || 3000;
 
 // Setup development middleware
 if (app.env === "development") {
-  app.use(requestLogger());
   app.use(livereload());
+  app.use(requestLogger());
+  app.use(staticCache(path.join(__dirname, "dist"), {
+    gzip: true
+  }));
 }
 
 // Setup middleware
 app.use(responseTime());
 app.use(errorHandler());
-app.use(koaViews(path.join(__dirname, "views")));
-app.use(staticCache(path.join(__dirname, "dist"), {
-  gzip: true
-}));
+app.use(koaViews(path.join(__dirname, "dist/views")));
 
 // Initialize the router
 routes(app);

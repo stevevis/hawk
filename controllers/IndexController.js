@@ -1,5 +1,9 @@
 "use strict";
 
+var React = require("react");
+var HawkApp = require("../components/HawkApp.jsx");
+
 exports.get = function *() {
-  yield this.render("index");
+  var reactHtml = React.renderToString(React.createElement(HawkApp));
+  yield this.render("index", { html: reactHtml });
 };

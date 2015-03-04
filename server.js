@@ -9,6 +9,7 @@ var errorHandler = require("koa-error");
 var requestLogger = require("koa-logger");
 var livereload = require("koa-livereload");
 var responseTime = require("koa-response-time");
+require("node-jsx").install({extension: ".jsx"});
 
 // Local dependencies
 var logger = require("./config/logger");
@@ -30,7 +31,11 @@ if (app.env === "development") {
 // Setup middleware
 app.use(responseTime());
 app.use(errorHandler());
-app.use(koaViews(path.join(__dirname, "dist/views")));
+app.use(koaViews(path.join(__dirname, "dist/views"), {
+  map: {
+    html: "handlebars"
+  }
+}));
 
 // Initialize the router
 routes(app);

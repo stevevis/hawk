@@ -3,7 +3,11 @@
 var React = require("react");
 var HawkApp = require("./components/HawkApp.jsx");
 
+$(document).foundation();
+
 React.render(
-  React.createElement(HawkApp),
+  <HawkApp/>,
   document.getElementById("hawk-app")
 );
+
+

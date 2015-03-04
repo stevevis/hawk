@@ -30,14 +30,7 @@ var MusicBrainzService = require("../services/MusicBrainzService");
 var lastUpdateStats;
 
 // Stats for the current update run
-var stats = {
-  version: "",
-  totalArtists: 0,
-  artistsUpdated: 0,
-  newArtists: 0,
-  totalReleases: 0,
-  newReleases: 0
-};
+var currentStats;
 
 // Ignore artists with these names
 var ignore = [
@@ -52,8 +45,8 @@ mongoose.connect(mongoConfig.uri, mongoConfig.options);
  * Log the progress of the database update as % of artists completed.
  */
 function logProgress() {
-  logger.info("Updated %s out of %s artists (%s\%)", stats.artistsUpdated, stats.totalArtists, 
-      Math.floor(stats.artistsUpdated / stats.totalArtists * 100));
+  logger.info("Updated %s out of %s artists (%s\%)", currentStats.artistsUpdated, currentStats.totalArtists, 
+      Math.floor(currentStats.artistsUpdated / currentStats.totalArtists * 100));
 }
 
 /**
@@ -79,12 +72,12 @@ var updateArtist = function(artist, callback) {
         // and the MusicBrainz DB is the number of new releases.
         var oldReleases = artistModel.releases.map(function(release) { return release._id; });
         var newReleases = releases.map(function(release) { return release._id; });
-        stats.newReleases += (newReleases.length - _.intersection(oldReleases, newReleases).length);
-        stats.totalReleases += newReleases.length;
+        currentStats.newReleases += (newReleases.length - _.intersection(oldReleases, newReleases).length);
+        currentStats.totalReleases += newReleases.length;
       } else {
-        stats.newArtists++;
-        stats.newReleases += releases.length;
-        stats.totalReleases += releases.length;
+        currentStats.newArtists++;
+        currentStats.newReleases += releases.length;
+        currentStats.totalReleases += releases.length;
       }
 
       Artist.update({ _id: artist._id }, artist, { upsert: true }, function(err) {
@@ -93,7 +86,7 @@ var updateArtist = function(artist, callback) {
           callback(err);
         } else {
           logger.debug("Saved artist %s with %d releases", artist.name, releases.length);
-          stats.artistsUpdated++;
+          currentStats.artistsUpdated++;
           callback(null);
         }
       });
@@ -116,7 +109,7 @@ var getArtistsAndUpdate = function(callback) {
     },
     function(artists, callback) {
       logger.info("Found %d artists in MusicBrainz database", artists.length);
-      stats.totalArtists = artists.length;
+      currentStats.totalArtists = artists.length;
       progress = setInterval(logProgress, 10000);
 
       async.eachLimit(artists, 40, updateArtist, function(err) {
@@ -132,11 +125,11 @@ var getArtistsAndUpdate = function(callback) {
     function(callback) {
       clearInterval(progress);
       logProgress();
-      logger.info("Found %d new artists", stats.newArtists);
-      logger.info("Found %d new releases", stats.newReleases);
+      logger.info("Found %d new artists", currentStats.newArtists);
+      logger.info("Found %d new releases", currentStats.newReleases);
 
       // Send an SNS notification with some stats about the update e.g. how many new artists/releases
-      SNSService.sendDatabaseUpdateMessage("Finished Updating Hawk DB", JSON.stringify(stats, null, "\t"), callback, true);
+      SNSService.sendDatabaseUpdateMessage("Finished Updating Hawk DB", JSON.stringify(currentStats, null, "\t"), callback, true);
     }
   ], function (err) {
     if (err) {
@@ -151,6 +144,8 @@ var getArtistsAndUpdate = function(callback) {
  * Business time.
  */
 function updateHawkDB(exitOnFinish) {
+  currentStats = new DatabaseUpdate();
+
   async.series({
     startMusicBrainz: function(callback) {
       EC2Service.startInstance(AWSConfig.EC2.musicBrainz.instanceId, callback);
@@ -174,7 +169,7 @@ function updateHawkDB(exitOnFinish) {
       
       if (!argv.create) {
         logger.info("Skipping creating a new MusicBrainz database, using last update %s", lastUpdateVersion);
-        stats.version = lastUpdateVersion;
+        currentStats.version = lastUpdateVersion;
         return callback(null);
       }
 
@@ -182,18 +177,16 @@ function updateHawkDB(exitOnFinish) {
         if (err) {
           callback(err);
         } else {
-          stats.version = version;
+          currentStats.version = version;
           callback(null);
         }
       });
     },
     updateArtists: function(callback) {
-      //stats.version = "20150228-002426";
       getArtistsAndUpdate(callback);
     },
     saveUpdateStats: function(callback) {
-      var currentUpdateStats = new DatabaseUpdate(stats);
-      currentUpdateStats.save(function(err) {
+      currentStats.save(function(err) {
         if (err) {
           callback(err);
         } else {
@@ -233,7 +226,7 @@ function updateHawkDB(exitOnFinish) {
 
 if (argv.cron) {
   new CronJob({
-    cronTime: "00 00 13 * * *", // 1PM UTC == 12AM AEDT
+    cronTime: "00 */30 * * * *", // 1PM UTC == 12AM AEDT
     onTick: function() {
       updateHawkDB(false);
     }

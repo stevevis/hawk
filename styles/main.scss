@@ -1,2 +1,35 @@
-@import "settings";
+@import "foundation_settings";
 @import "foundation";
+@import "hawk_settings";
+@import "compass/css3";
+
+.nav-wrapper {
+  margin-top: 1px;
+  border-bottom: 1px solid $gainsboro;
+}
+
+.add-artist {
+  @mixin big-input {
+    font-size: 3.5rem;
+    background: none;
+    border: none;
+    border-bottom: 1px solid $gainsboro;
+    font-weight: $font-weight-thin;
+
+    @include input-placeholder {
+      color: $placeholder-color;
+    }
+  }
+
+  .input-artist {
+    @include big-input;
+    margin-top: 1rem;
+    box-shadow: none;
+    height: auto;
+    color: $steel;
+  }
+
+  .input-artist:focus {
+    @include big-input;
+  }
+}

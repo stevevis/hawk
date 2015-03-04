@@ -33,7 +33,7 @@ var specific = {
   development: {
     EC2: {
       musicBrainz: {
-        privateIp: "54.152.99.254"
+        privateIp: "52.1.26.152"
       }
     }
   },

@@ -20,7 +20,7 @@ var cloudFrontUrl = "http://d2pxoitp5g519f.cloudfront.net";
 
 // Source files to read from
 var src = {
-  app: "./app.js",
+  app: "./app.jsx",
   style: "./styles/main.scss",
   scss: "./styles/**/*.scss",
   img: "./images/**/*",

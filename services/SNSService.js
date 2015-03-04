@@ -4,6 +4,8 @@ var AWS = require("aws-sdk");
 var AWSConfig = require("../config/aws");
 var logger = require("../config/logger");
 
+var env = process.env.NODE_ENV = process.env.NODE_ENV || "development";
+
 var SNSService = function() {
   AWS.config.region = AWSConfig.region;
   this.sns = new AWS.SNS({ apiVersion: AWSConfig.SNS.apiVersion });
@@ -11,6 +13,11 @@ var SNSService = function() {
 
 function sendMessage(sns, topic, subject, message, callback, ignoreError) {
   logger.info("Sending message subject '%s' to topic '%s'", subject, topic);
+
+  if (env !== "production") {
+    logger.info("Skipping SNS message in development");
+    return callback(null);
+  }
 
   var params = {
     TopicArn: topic,

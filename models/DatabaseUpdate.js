@@ -4,11 +4,12 @@ var mongoose = require("mongoose");
 
 var databaseUpdateSchema = mongoose.Schema({
   updateDate: { type: Date, default: Date.now },
-  version: { type: "String" },
-  totalArtists: { type: "Number" },
-  newArtists: { type: "Number" },
-  totalReleases: { type: "Number" },
-  newReleases: { type: "Number" },
+  version: { type: "String", default: 0 },
+  totalArtists: { type: "Number", default: 0 },
+  artistsUpdated: { type: "Number", default: 0 },
+  newArtists: { type: "Number", default: 0 },
+  totalReleases: { type: "Number", default: 0 },
+  newReleases: { type: "Number", default: 0 },
 });
 
 var DatabaseUpdate = mongoose.model("DatabaseUpdate", databaseUpdateSchema);

@@ -13,11 +13,11 @@ require("node-jsx").install({extension: ".jsx"});
 
 // Local dependencies
 var logger = require("./config/logger");
-var routes = require("./config/routes");
+var routes = require("./config/routes.jsx");
 
 // Initialize the server
 var app = module.exports = koa();
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 4000;
 
 // Setup development middleware
 if (app.env === "development") {
@@ -37,8 +37,11 @@ app.use(koaViews(path.join(__dirname, "dist/views"), {
   }
 }));
 
-// Initialize the router
-routes(app);
+// Initialize the routers, the react router must come first because it determines which react component needs to be
+// rendered and sets that component in context.state, then the koa router will determine which controller needs to
+// be called so that it can load any data needed to render the react component.
+app.use(routes.reactRouter);
+routes.koaRouter(app);
 
 // Start the server if this script wasn"t required by another script e.g. a function test script
 if (!module.parent) {

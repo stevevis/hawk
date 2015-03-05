@@ -263,7 +263,6 @@ gulp.task("dev", ["vendors", "watch"], function() {
       ".git",
       "node_modules/**/node_modules",
       "bower_components",
-      "components",
       "views",
       "dist"
     ]

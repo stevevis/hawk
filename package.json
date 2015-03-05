@@ -78,10 +78,5 @@
     "uglify-js": "^2.4.16",
     "vinyl-source-stream": "^1.0.0",
     "watchify": "^2.3.0"
-  },
-  "browserify": {
-    "transform": [
-      "reactify"
-    ]
   }
 }

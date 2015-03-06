@@ -107,9 +107,7 @@ function bundle(watch) {
       stream.pipe(plugins.streamify(plugins.uglify()));
     }
 
-    return stream
-      .pipe(gulp.dest(dist.js))
-      .pipe(plugins.notify("Finished browserifying " + out.app));
+    return stream.pipe(gulp.dest(dist.js));
   };
 
   bundler.on("update", rebundle);
@@ -253,6 +251,7 @@ gulp.task("watch", ["browserify-watch", "scss", "views"], function() {
 gulp.task("dev", ["vendors", "watch"], function() {
   plugins.nodemon({
     script: src.server,
+    ext: "js jsx",
     env: {
       NODE_ENV: "development"
     },
@@ -263,8 +262,13 @@ gulp.task("dev", ["vendors", "watch"], function() {
       ".git",
       "node_modules/**/node_modules",
       "bower_components",
+      "components",
       "views",
       "dist"
     ]
+  }).on("restart", function() {
+    setTimeout(function() {
+      plugins.livereload.reload();
+    }, 500);
   });
 });

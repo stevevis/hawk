@@ -13,7 +13,7 @@ require("node-jsx").install({extension: ".jsx"});
 
 // Local dependencies
 var logger = require("./config/logger");
-var routes = require("./config/routes.jsx");
+var routes = require("./config/routes/server");
 
 // Initialize the server
 var app = module.exports = koa();

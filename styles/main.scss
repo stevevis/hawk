@@ -14,7 +14,7 @@
     background: none;
     border: none;
     border-bottom: 1px solid $gainsboro;
-    font-weight: $font-weight-thin;
+    font-weight: $font-weight-normal;
 
     @include input-placeholder {
       color: $placeholder-color;

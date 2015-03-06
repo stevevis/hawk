@@ -94,8 +94,7 @@ $font-family-sans-serif: Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
 // $font-family-monospace: Consolas, "Liberation Mono", Courier, monospace;
 
 // We use these to define default font weights
-$font-weight-thin: 100;
-$font-weight-normal: 300;
+$font-weight-normal: 100;
 $font-weight-bold: 500;
 
 $white       : #FFFFFF;
@@ -1399,7 +1398,7 @@ $topbar-link-color-hover: $jet;
 // $topbar-link-color-active: $white;
 // $topbar-link-color-active-hover: $white;
 // $topbar-link-weight: $font-weight-normal;
-$topbar-link-font-size: rem-calc(16);
+$topbar-link-font-size: rem-calc(19);
 // $topbar-link-hover-lightness: -10%; // Darken by 10%
 $topbar-link-bg: $topbar-bg;
 $topbar-link-bg-hover: $smoke;

@@ -15,7 +15,7 @@
   "deploy" : {
     "production" : {
       "user" : "ubuntu",
-      "host" : "52.1.155.101",
+      "host" : "52.10.208.97",
       "ref"  : "origin/master",
       "repo" : "https://github.com/stevevis/hawk.git",
       "path" : "/var/www/hawk",

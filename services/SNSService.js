@@ -7,7 +7,7 @@ var logger = require("../config/logger");
 var env = process.env.NODE_ENV = process.env.NODE_ENV || "development";
 
 var SNSService = function() {
-  AWS.config.region = AWSConfig.region;
+  AWS.config.region = AWSConfig.SNS.region;
   this.sns = new AWS.SNS({ apiVersion: AWSConfig.SNS.apiVersion });
 };
 

@@ -23,12 +23,12 @@ var base = {
 var specific = {
   development: {
     connect: {
-      host: "52.0.235.59"
+      host: "52.10.63.223"
     }
   },
   production: {
     connect: {
-      host: "172.30.1.209"
+      host: "172.31.32.22"
     }
   }
 };

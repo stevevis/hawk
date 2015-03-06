@@ -5,7 +5,7 @@ var AWSConfig = require("../config/aws");
 var logger = require("../config/logger");
 
 var EC2Service = function() {
-  AWS.config.region = AWSConfig.region;
+  AWS.config.region = AWSConfig.EC2.region;
   this.ec2 = new AWS.EC2({ apiVersion: AWSConfig.EC2.apiVersion });
 };
 

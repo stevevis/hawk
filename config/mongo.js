@@ -19,7 +19,7 @@ var base = {
 
 var specific = {
   development: {
-    uri: "mongodb://52.1.155.101/hawk"
+    uri: "mongodb://52.10.208.97/hawk"
   },
   production: {
     uri: "mongodb://127.0.0.1/hawk"

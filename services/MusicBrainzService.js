@@ -25,55 +25,63 @@ var connectConfig = {
 /**
  * Get an SSH client that is ready to execute commands on the MusicBrainz DB server.
  */
-function getSSHClient(callback) {
-  logger.info("Connecting to MusicBrainz DB server %s", connectConfig.host);
-  var client = new Client();
-  client.on("ready", function() {
-    callback(null);
-  }).connect(connectConfig);
-  return client;
+function getSSHClient() {
+  return new Promise(function(resolve, reject) {
+    logger.debug("Connecting to MusicBrainz DB server %s", connectConfig.host);
+    var client = new Client();
+    client.on("ready", function() {
+      resolve(client);
+    }).on("error", function(err) {
+      logger.error("Error connecting to MusicBrainz server");
+      reject(err);
+    }).connect(connectConfig);
+  });
 }
 
 /**
  * Exec the given command on the given SSH client, return the output in the callback.
  */
-function execSSHClient(client, command, callback) {
-  logger.info("Executing command `%s`", command);
+function execSSHClient(command, callback) {
+  getSSHClient().then(function(client) {
+    logger.info("Executing command `%s`", command);
 
-  client.exec(command, function(err, stream) {
-    if (err) {
-      logger.error(err);
-      return callback(err);
-    }
+    client.exec(command, function(err, stream) {
+      if (err) {
+        logger.error(err);
+        return callback(err);
+      }
 
-    var buffer = "";
-    stream.setEncoding("utf8");
-    stream.stderr.setEncoding("utf8");
+      var buffer = "";
+      stream.setEncoding("utf8");
+      stream.stderr.setEncoding("utf8");
 
-    stream.on("close", function() {
-      buffer = buffer.trim();
-      logger.info("[Output]\n`%s`", buffer);
-      callback(null, buffer);
-    }).on("data", function(data) {
-      buffer += data;
-    }).stderr.on("data", function(data) {
-      buffer += data;
+      stream.on("close", function() {
+        buffer = buffer.trim();
+        logger.info("[Output]\n`%s`", buffer);
+        callback(null, buffer);
+      }).on("data", function(data) {
+        buffer += data;
+      }).stderr.on("data", function(data) {
+        buffer += data;
+      });
     });
+  }, function(err) {
+    callback(err);
   });
 }
 
 /**
  * Continue to execute the given command on the given SSH client until the output matches the expected value.
  */
-function execSSHClientUntil(client, command, expected, delay, callback) {
+function execSSHClientUntil(command, expected, delay, callback) {
   logger.info("Executing command `%s` until output is `%s`", command, expected);
 
-  execSSHClient(client, command, function(err, output) {
+  execSSHClient(command, function(err, output) {
     if (output === expected) {
       callback(null);
     } else {
       setTimeout(function() {
-        execSSHClientUntil(client, command, expected, delay, callback);
+        execSSHClientUntil(command, expected, delay, callback);
       }, delay);
     }
   });
@@ -90,15 +98,12 @@ var MusicBrainzService = function() {};
  * database dumps are the same version as lastVersion.
  */
 MusicBrainzService.prototype.createDatabase = function(lastVersion, callback) {
-  var client = null,
-      version = "";
+  var version = "";
 
   async.series({
-    getClient: function(callback) {
-      client = getSSHClient(callback);
-    },
     checkIfRunning: function(callback) {
-      execSSHClient(client, pgConfig.commands.checkInitDbProcess, function(err, output) {
+      logger.info("Checking if update job is already running on MusicBrainz server");
+      execSSHClient(pgConfig.commands.checkInitDbProcess, function(err, output) {
         if (err) {
           return callback (err);
         }
@@ -110,7 +115,7 @@ MusicBrainzService.prototype.createDatabase = function(lastVersion, callback) {
       });
     },
     downloadDumps: function(callback) {
-      execSSHClient(client, pgConfig.commands.downloadDumps + " " + lastVersion, function(err, output) {
+      execSSHClient(pgConfig.commands.downloadDumps + " " + lastVersion, function(err, output) {
         if (err) {
           return callback (err);
         }
@@ -124,16 +129,17 @@ MusicBrainzService.prototype.createDatabase = function(lastVersion, callback) {
       });
     },
     cleanup: function(callback) {
-      execSSHClient(client, pgConfig.commands.cleanup, callback);
+      execSSHClient(pgConfig.commands.cleanup, callback);
     },
     createDatabase: function(callback) {
-      execSSHClient(client, pgConfig.commands.createDatabase, callback);
+      execSSHClient(pgConfig.commands.createDatabase, callback);
     },
     waitUntilFinished: function(callback) {
-      execSSHClientUntil(client, pgConfig.commands.checkInitDbProcess, "0", 10 * 60 * 1000, callback);
+      logger.info("Waiting until update job finishes on MusicBrainz server");
+      execSSHClientUntil(pgConfig.commands.checkInitDbProcess, "0", 10 * 60 * 1000, callback);
     },
     sendNotification: function(callback) {
-      execSSHClient(client, pgConfig.commands.getLastLineOfLog, function(err, output) {
+      execSSHClient(pgConfig.commands.getLastLineOfLog, function(err, output) {
         if (err) {
           callback(err);
         } else {

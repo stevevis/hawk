@@ -11,7 +11,7 @@ function requireController(name) {
   return require("../../controllers/" + name);
 }
 
-// Convert the master routes list into Koa routes
+// Initialize a koa route for each master route
 function generateKoaRoutes(app, parent, path) {
   var base = path ? path : "";
   var controller = requireController(parent.controller);

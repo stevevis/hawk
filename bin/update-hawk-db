@@ -226,7 +226,7 @@ function updateHawkDB(exitOnFinish) {
 
 if (argv.cron) {
   new CronJob({
-    cronTime: "00 00 13 * * *", // 1PM UTC == 12AM AEDT
+    cronTime: "00 45 09 * * *", // 1PM UTC == 12AM AEDT
     onTick: function() {
       updateHawkDB(false);
     }

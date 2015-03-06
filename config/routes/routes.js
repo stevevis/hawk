@@ -23,9 +23,11 @@ var Route = function(name, path, handler, controller, children, defaultRoute) {
   this.defaultRoute = defaultRoute ? defaultRoute : false;
 };
 
-// The master routes list
-// We use the React components directly because browserify can't handle loading them dynamically, but we can just store
-// the Koa controllers as strings and load them dynamically because they are only used on the server.
+/* 
+ * The master routes list - We use the React components directly because browserify won't include them if we load them
+ * dynamically, but we can just store the Koa controllers as strings and load them dynamically since they are only used
+ * on the server.
+ */
 var routes = {
   source: new Route("hawk", "/", HawkApp, "IndexController", [
     new Route("feed", "feed", Feed, "IndexController", null, false),

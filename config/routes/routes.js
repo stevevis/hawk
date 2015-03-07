@@ -1,6 +1,7 @@
 "use strict";
 
 var HawkApp = require("../../components/HawkApp.jsx");
+var Home = require("../../components/Home.jsx");
 var Feed = require("../../components/Feed.jsx");
 var Track = require("../../components/Track.jsx");
 
@@ -30,8 +31,9 @@ var Route = function(name, path, handler, controller, children, defaultRoute) {
  */
 var routes = {
   source: new Route("hawk", "/", HawkApp, "IndexController", [
+    new Route("home", "home", Home, "IndexController", null, true),
     new Route("feed", "feed", Feed, "IndexController", null, false),
-    new Route("track", "track", Track, "IndexController", null, true)
+    new Route("track", "track", Track, "IndexController", null, false)
   ])
 };
 

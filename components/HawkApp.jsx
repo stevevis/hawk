@@ -7,9 +7,13 @@ var TopBar = require("./TopBar.jsx");
 var HawkApp = React.createClass({
   render: function() {
     return (
-      <div>
-        <TopBar/>
-        <RouteHandler/>
+      <div className="hawk-wrapper">
+        <div className="nav-wrapper">
+          <TopBar/>
+        </div>
+        <div className="content-wrapper">
+          <RouteHandler/>
+        </div>
       </div>
     );
   }

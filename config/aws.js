@@ -20,13 +20,16 @@ var base = {
     databaseUpdateTopic: "arn:aws:sns:us-west-2:982428925509:hawk-database-update"
   },
   S3: {
-    hawk: {
-      bucket: "stevevis-hawk",
-      region: "us-east-1"
+    bucket: {
+      bucket: "musichawk",
+      region: "us-west-2"
     },
     headers: {
       "Cache-Control": "max-age=315360000, no-transform, public"
     }
+  },
+  CloudFront: {
+    URL: "http://dpf6wbziy9btt.cloudfront.net"
   }
 };
 

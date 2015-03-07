@@ -8,7 +8,7 @@ var Track = React.createClass({
   },
   render: function() {
     return (
-      <div className="add-artist">
+      <div className="track">
         <div className="row">
           <form>
             <div className="small-12 large-10 large-centered columns">

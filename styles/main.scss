@@ -3,12 +3,67 @@
 @import "hawk_settings";
 @import "compass/css3";
 
+#hawk {
+  height: 100%;
+}
+
+.hawk-wrapper {
+  height: 100%;
+  padding-top: $topbar-height;
+}
+
 .nav-wrapper {
   padding-top: 1px;
   border-bottom: 1px solid $gainsboro;
+  margin-top: -($topbar-height + rem-calc(2px));
 }
 
-.add-artist {
+.content-wrapper, .content {
+  height: 100%;
+}
+
+.footer {
+  margin-bottom: -$topbar-height;
+
+  .footer-content {
+    line-height: $topbar-height;
+    font-size: 90%;
+  }
+}
+
+.home {
+  height: 100%;
+  padding: $topbar-height 0;
+  // http://sixrevisions.com/css/responsive-background-image/
+  background-image: url(../img/northern_hawk_finland-wide.jpg), url(../img/northern_hawk_finland-small.jpg);
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+@mixin ghost-block {
+  background-color: rgba($ghost, 0.7);
+  @include radius;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.welcome {
+  h3 {
+    font-weight: $font-weight-bold;
+  }
+}
+
+.login-form {
+  @include ghost-block;
+}
+
+.signup-form {
+  @include ghost-block;
+}
+
+.track {
   @mixin big-input {
     font-size: 3.5rem;
     background: none;

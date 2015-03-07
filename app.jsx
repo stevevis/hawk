@@ -11,5 +11,5 @@ $(document).foundation();
 
 // Initialize the React router
 Router.run(routes.react, Router.HistoryLocation, function(Handler) {
-  React.render(<Handler/>, document.getElementById("hawk-app"));
+  React.render(<Handler/>, document.getElementById("hawk"));
 });

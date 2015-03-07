@@ -2,13 +2,15 @@
 
 var React = require("react");
 
-var Feed = React.createClass({
+var Footer = React.createClass({
   render: function() {
     return (
-      <div className="release-feed">
+      <div className="footer">
         <div className="row">
           <div className="small-12 columns">
-            <p>Hello, Hawk!</p>
+            <div className="footer-content text-center">
+              <span>&copy; 2015 Steve Viselli</span>
+            </div>
           </div>
         </div>
       </div>
@@ -16,4 +18,4 @@ var Feed = React.createClass({
   }
 });
 
-module.exports = Feed;
+module.exports = Footer;

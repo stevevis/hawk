@@ -16,14 +16,13 @@ var AWSConfig = require("./config/aws");
 
 var version = shortId.generate();
 var prod = process.env.NODE_ENV === "production";
-var cloudFrontUrl = "http://d2pxoitp5g519f.cloudfront.net";
 
 // Source files to read from
 var src = {
   app: "./app.jsx",
   style: "./styles/main.scss",
   scss: "./styles/**/*.scss",
-  img: "./images/**/*",
+  images: "./images/**/*",
   views: "./views/**/*",
   server: "./server.js",
   vendor: {
@@ -196,16 +195,47 @@ gulp.task("views", function() {
 });
 
 /**
+ * Minify our images and copy them to the dist directory.
+ */
+gulp.task("images", function() {
+  return gulp.src(src.images)
+    .pipe(plugins.imagemin({
+      progressive: true
+    }))
+    .pipe(gulp.dest(dist.img));
+});
+
+/**
+ * Add version numbers to our minified images and publish them to cloudfront.
+ */ 
+gulp.task("version-images", ["images"], function() {
+  var publisher = plugins.awspublish.create(AWSConfig.S3.bucket);
+  var headers = AWSConfig.S3.headers;
+
+  return gulp.src(["./dist/img/*"])
+    .pipe(plugins.revAll())
+    .pipe(plugins.rename(function(path) {
+      path.dirname += "/" + version + "/img";
+    }))
+    .pipe(plugins.awspublish.gzip())
+    .pipe(parallelize(publisher.publish(headers)))
+    .pipe(publisher.cache())
+    .pipe(plugins.awspublish.reporter())
+    .pipe(plugins.revAll.manifest({ fileName: "manifest.json" }))
+    .pipe(gulp.dest(dist.img));
+});
+
+/**
  * Add version numbers to our compiled assets and publish them to cloudfront.
  */
-gulp.task("version-assets", ["vendors", "browserify", "scss"], function() {
-  var publisher = plugins.awspublish.create(AWSConfig.S3.hawk);
+gulp.task("version-assets", ["vendors", "browserify", "scss", "version-images"], function() {
+  var publisher = plugins.awspublish.create(AWSConfig.S3.bucket);
   var headers = AWSConfig.S3.headers;
 
   return gulp.src(["./dist/css/*.css", "./dist/js/*.js"])
     .pipe(plugins.revAll())
     .pipe(plugins.rename(function(path) {
-      path.dirname += "/" + version;
+      path.dirname += "/" + version + "/" + path.extname.substr(1);
     }))
     .pipe(plugins.awspublish.gzip())
     .pipe(parallelize(publisher.publish(headers)))
@@ -223,7 +253,7 @@ gulp.task("use-versioned-assets", ["version-assets"], function() {
   var viewStream = gulp.src([src.views]);
   _.forOwn(manifest, function(value, key) {
     var ext = key.split(".").slice(-1)[0];
-    viewStream.pipe(plugins.replace(ext + "/" + key, cloudFrontUrl + "/" + value));
+    viewStream.pipe(plugins.replace(ext + "/" + key, AWSConfig.CloudFront.URL + "/" + value));
   });
   viewStream.pipe(gulp.dest(dist.views));
 });
@@ -231,12 +261,15 @@ gulp.task("use-versioned-assets", ["version-assets"], function() {
 /**
  * Watch our javascript, styles and images and recompile on update.
  */
-gulp.task("watch", ["browserify-watch", "scss", "views"], function() {
+gulp.task("watch", ["browserify-watch", "scss", "views", "images"], function() {
   // Compile and minify our sscs stylesheets
   gulp.watch(src.scss, ["scss"]);
 
   // Copy our views to the dist folder
   gulp.watch(src.views, ["views"]);
+
+  // Copy our images to the dist folder
+  gulp.watch(src.images, ["images"]);
 
   // Create LiveReload server and watch for changes to front-end code
   plugins.livereload.listen();
@@ -263,10 +296,12 @@ gulp.task("dev", ["vendors", "watch"], function() {
       "node_modules/**/node_modules",
       "bower_components",
       "components",
+      "images",
       "views",
       "dist"
     ]
   }).on("restart", function() {
+    // Reload the page 500ms after a server restart
     setTimeout(function() {
       plugins.livereload.reload();
     }, 500);

@@ -58,6 +58,7 @@ function execSSHClient(command, callback) {
       stream.on("close", function() {
         buffer = buffer.trim();
         logger.info("[Output]\n`%s`", buffer);
+        client.end();
         callback(null, buffer);
       }).on("data", function(data) {
         buffer += data;

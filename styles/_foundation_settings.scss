@@ -117,8 +117,34 @@ $oil         : #333333;
 $jet         : #222222;
 $black       : #000000;
 
+// Awesome colors from http://bootflat.github.io/documentation.html
+$bluejeans-dark     : #4A89DC;
+$bluejeans-light    : #5D9CEC;
+$aqua-dark          : #3BAFDA;
+$aqua-light         : #4FC1E9;
+$mint-dark          : #37BC9B;
+$mint-light         : #48CFAD;
+$grass-dark         : #8CC152;
+$grass-light        : #A0D468;
+$sunflower-dark     : #F6BB42;
+$sunflower-light    : #FFCE54;
+$bittersweet-dark   : #E9573F;
+$bittersweet-light  : #FC6E51;
+$grapefruit-dark    : #DA4453;
+$grapefruit-light   : #ED5565;
+$lavender-dark      : #967ADC;
+$lavender-light     : #AC92EC;
+$pinkrose-dark      : #D770AD;
+$pinkrose-light     : #EC87C0;
+$lightgray-dark     : #E6E9ED;
+$lightgray-light    : #F5F7FA;
+$mediumgray-dark    : #AAB2BD;
+$mediumgray-light   : #CCD1D9;
+$darkgray-dark      : #434A54;
+$darkgray-light     : #656D78;
+
 // We use these as default colors throughout
-// $primary-color: #008CBA;
+$primary-color: $bluejeans-light;
 // $secondary-color: #e7e7e7;
 // $alert-color: #f04124;
 // $success-color: #43AC6A;
@@ -634,7 +660,7 @@ $body-font-weight: $font-weight-normal;
 // $form-label-bottom-margin: 0;
 // $input-font-family: inherit;
 // $input-font-color: rgba(0,0,0,0.75);
-// $input-font-size: rem-calc(14);
+$input-font-size: rem-calc(13);
 // $input-bg-color: $white;
 // $input-focus-bg-color: scale-color($white, $lightness: -2%);
 // $input-border-color: scale-color($white, $lightness: -20%);
@@ -1395,9 +1421,9 @@ $topbar-title-font-size: rem-calc(16);
 // Set the link colors and styles for top-level nav
 $topbar-link-color: $jet;
 $topbar-link-color-hover: $jet;
-// $topbar-link-color-active: $white;
-// $topbar-link-color-active-hover: $white;
-// $topbar-link-weight: $font-weight-normal;
+$topbar-link-color-active: $jet;
+$topbar-link-color-active-hover: $jet;
+$topbar-link-weight: $font-weight-normal;
 $topbar-link-font-size: rem-calc(16);
 // $topbar-link-hover-lightness: -10%; // Darken by 10%
 $topbar-link-bg: $topbar-bg;
@@ -1414,14 +1440,14 @@ $topbar-link-bg-hover: $smoke;
 // $topbar-button-top: 7px;
 
 // Style the top bar dropdown elements
-// $topbar-dropdown-bg: $oil;
-// $topbar-dropdown-link-color: $white;
+$topbar-dropdown-bg: $white-smoke;
+$topbar-dropdown-link-color: $jet;
 // $topbar-dropdown-link-color-hover: $topbar-link-color-hover;
-// $topbar-dropdown-link-bg: $oil;
-// $topbar-dropdown-link-bg-hover: $oil;
+$topbar-dropdown-link-bg: $white-smoke;
+$topbar-dropdown-link-bg-hover: $smoke;
 // $topbar-dropdown-link-weight: $font-weight-normal;
 // $topbar-dropdown-toggle-size: 5px;
-// $topbar-dropdown-toggle-color: $white;
+$topbar-dropdown-toggle-color: $jet;
 // $topbar-dropdown-toggle-alpha: 0.4;
 
 // $topbar-dropdown-label-color: $monsoon;

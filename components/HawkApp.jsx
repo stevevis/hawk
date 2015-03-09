@@ -5,14 +5,17 @@ var RouteHandler = require("react-router").RouteHandler;
 var TopBar = require("./TopBar.jsx");
 
 var HawkApp = React.createClass({
+  getInitialState: function() {
+    return this.props;
+  },
   render: function() {
     return (
       <div className="hawk-wrapper">
         <div className="nav-wrapper">
-          <TopBar/>
+          <TopBar user={this.state.user}/>
         </div>
         <div className="content-wrapper">
-          <RouteHandler/>
+          <RouteHandler data={this.state}/>
         </div>
       </div>
     );

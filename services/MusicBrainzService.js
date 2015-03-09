@@ -19,7 +19,7 @@ var connectConfig = {
   host: AWSConfig.EC2.musicBrainz.privateIp,
   username: AWSConfig.EC2.musicBrainz.username,
   password: AWSConfig.EC2.musicBrainz.password,
-  readyTimeout: 60000
+  readyTimeout: 30000
 };
 
 /**

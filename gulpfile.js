@@ -273,7 +273,8 @@ gulp.task("watch", ["browserify-watch", "scss", "views", "images"], function() {
 
   // Create LiveReload server and watch for changes to front-end code
   plugins.livereload.listen();
-  gulp.watch(dist.root + "/**/*").on("change", plugins.livereload.changed);
+  gulp.watch(dist.root + "/**/*.css").on("change", plugins.livereload.changed);
+  gulp.watch(dist.root + "/**/*.html").on("change", plugins.livereload.changed);
 
   plugins.util.log(plugins.util.colors.green("Watching for changes..."));
 });
@@ -295,15 +296,14 @@ gulp.task("dev", ["vendors", "watch"], function() {
       ".git",
       "node_modules/**/node_modules",
       "bower_components",
-      "components",
       "images",
       "views",
       "dist"
     ]
   }).on("restart", function() {
-    // Reload the page 500ms after a server restart
+    // Give the server a chance to restart and connect to databases etc before reloading the page
     setTimeout(function() {
       plugins.livereload.reload();
-    }, 500);
+    }, 3000);
   });
 });

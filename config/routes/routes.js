@@ -1,9 +1,21 @@
 "use strict";
 
+var React = require("react");
+
 var HawkApp = require("../../components/HawkApp.jsx");
 var Home = require("../../components/Home.jsx");
 var Feed = require("../../components/Feed.jsx");
 var Track = require("../../components/Track.jsx");
+
+/**
+ * We need to give something to the React Router for API endpoints that don't have relevant React components otherwise
+ * it will complain about not being able to match the route. So we give it this dummy React component.
+ */
+var API = React.createClass({
+  render: function() {
+    return ("");
+  }
+});
 
 /** 
  * Helper object for representing routes in a way that we can convert them to either Koa routes or React routes
@@ -15,13 +27,14 @@ var Track = require("../../components/Track.jsx");
  * @param {Route ...} routes The child routes of this route
  * @param {Bool} defaultRoute True if this is the default child for the parent
  */
-var Route = function(name, path, handler, controller, children, defaultRoute) {
+var Route = function(name, path, handler, controller, secured, defaultRoute, children) {
   this.name = name;
   this.path = path;
   this.handler = handler;
   this.controller = controller;
-  this.children = children ? children : [];
+  this.secured = secured;
   this.defaultRoute = defaultRoute ? defaultRoute : false;
+  this.children = children ? children : [];
 };
 
 /* 
@@ -30,10 +43,13 @@ var Route = function(name, path, handler, controller, children, defaultRoute) {
  * on the server.
  */
 var routes = {
-  source: new Route("hawk", "/", HawkApp, "IndexController", [
-    new Route("home", "home", Home, "IndexController", null, true),
-    new Route("feed", "feed", Feed, "IndexController", null, false),
-    new Route("track", "track", Track, "IndexController", null, false)
+  source: new Route("hawk", "/", HawkApp, "IndexController", false, false, [
+    new Route("home", "home", Home, "IndexController", false, true),
+    new Route("user", "user", API, "UserController", false, false),
+    new Route("login", "login", API, "LoginController", false, false),
+    new Route("logout", "logout", API, "LogoutController", true, false),
+    new Route("feed", "feed", Feed, "IndexController", true, false),
+    new Route("track", "track", Track, "IndexController", true, false)
   ])
 };
 

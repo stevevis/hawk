@@ -2,7 +2,7 @@
 
 var mongoose = require("mongoose");
 
-var databaseUpdateSchema = mongoose.Schema({
+var DatabaseUpdateSchema = mongoose.Schema({
   updateDate: { type: Date, default: Date.now },
   version: { type: "String", default: 0 },
   totalArtists: { type: "Number", default: 0 },
@@ -12,6 +12,6 @@ var databaseUpdateSchema = mongoose.Schema({
   newReleases: { type: "Number", default: 0 },
 });
 
-var DatabaseUpdate = mongoose.model("DatabaseUpdate", databaseUpdateSchema);
+var DatabaseUpdate = mongoose.model("DatabaseUpdate", DatabaseUpdateSchema);
 
 module.exports = DatabaseUpdate;

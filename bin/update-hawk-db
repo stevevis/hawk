@@ -163,6 +163,12 @@ function updateHawkDB(exitOnFinish) {
         }
       });
     },
+    waitForSSHD: function(callback) {
+      // Wait a couple minutes in case sshd takes a while to startup on the MusicBrainz server
+      setTimeout(function() {
+        callback(null);
+      }, 120000);
+    },
     createMusicBrainzDB: function(callback) {
       var lastUpdateVersion = lastUpdateStats ? lastUpdateStats.version : "";
       logger.info("Last database update was %s", lastUpdateVersion);

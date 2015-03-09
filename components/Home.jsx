@@ -2,9 +2,21 @@
 
 var React = require("react");
 var Footer = require("./Footer.jsx");
+var Login = require("./Login.jsx");
+var SignUp = require("./SignUp.jsx");
 
 var Home = React.createClass({
   render: function() {
+    var loginMessage = <h6>Got an account? Log in!</h6>;
+    if (this.props.data.errors.loginError) {
+      loginMessage = <h6 className="error">Sorry, we couldn't log you in.<br/>Please try again.</h6>
+    }
+
+    var signupMessage = <h6>New to Hawk? Sign up!</h6>;
+    if (this.props.data.errors.signupError) {
+      signupMessage = <h6 className="error">Sorry, you're not on the list!</h6>
+    }
+
     return (
       <div className="home">
         <div className="content">
@@ -18,10 +30,12 @@ var Home = React.createClass({
             </div>
             <div className="small-12 medium-6 large-4 columns">
               <div className="login-form">
-                Login
+                {loginMessage}
+                <Login error={this.props.loginError}/>
               </div>
               <div className="signup-form">
-                Sign Up
+                {signupMessage}
+                <SignUp error={this.props.signupError}/>
               </div>
             </div>
           </div>

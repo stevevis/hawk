@@ -9,7 +9,9 @@ var routes = require("./config/routes/client");
 // Initialize Foundation
 $(document).foundation();
 
+var props = JSON.parse(document.getElementById("props").innerHTML);
+
 // Initialize the React router
 Router.run(routes.react, Router.HistoryLocation, function(Handler) {
-  React.render(<Handler/>, document.getElementById("hawk"));
+  React.render(React.createElement(Handler, props), document.getElementById("hawk"));
 });

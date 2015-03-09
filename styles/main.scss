@@ -16,6 +16,16 @@
   padding-top: 1px;
   border-bottom: 1px solid $gainsboro;
   margin-top: -($topbar-height + rem-calc(2px));
+
+  ul.dropdown {
+    border: 1px solid $gainsboro;
+  }
+}
+
+@media #{$medium-up} {
+  .top-bar {
+    padding: 0 1rem 0 0;
+  }
 }
 
 .content-wrapper, .content {
@@ -40,6 +50,25 @@
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-size: cover;
+
+  h6 {
+    margin-top: 0;
+  }
+
+  h6.error {
+    color: $grapefruit-light;
+  }
+
+  input {
+    margin-bottom: 0.5rem;
+    @include input-placeholder {
+      font-weight: $font-weight-normal;
+    }
+  }
+
+  .button {
+    margin-bottom: 0.5rem;
+  }
 }
 
 @mixin ghost-block {

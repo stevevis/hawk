@@ -2,7 +2,7 @@
 
 var mongoose = require("mongoose");
 
-var releaseSchema = mongoose.Schema({
+var ReleaseSchema = mongoose.Schema({
   _id: { type: "Number" },
   gid: { type: "String" },
   name: { type: "String", index: true },
@@ -12,6 +12,6 @@ var releaseSchema = mongoose.Schema({
   day: { type: "Number", min: 1, max: 31 }
 });
 
-var Release = mongoose.model("Release", releaseSchema);
+var Release = mongoose.model("Release", ReleaseSchema);
 
 module.exports = Release;

@@ -3,13 +3,13 @@
 var mongoose = require("mongoose");
 var Release = require("./Release");
 
-var artistSchema = mongoose.Schema({
+var ArtistSchema = mongoose.Schema({
   _id: { type: "Number" },
   gid: { type: "String" },
   name: { type: "String", index: true },
   releases:  [ Release.schema ]
 });
 
-var Artist = mongoose.model("Artist", artistSchema);
+var Artist = mongoose.model("Artist", ArtistSchema);
 
 module.exports = Artist;

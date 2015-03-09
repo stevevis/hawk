@@ -11,7 +11,7 @@ var whitelist = [
 
 exports.post = function *() {
   if (_.indexOf(whitelist, this.request.body.email) === -1) {
-    ctx.session.errors = { signupError: true };
+    this.session.errors = { signupError: true };
     return this.redirect("/");
   }
 

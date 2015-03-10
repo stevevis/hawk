@@ -7,7 +7,7 @@ var User = require("../models/User");
 var whitelist = [
   "test@hawk.com",
   "steve@hawk.com",
-]
+];
 
 exports.post = function *() {
   if (_.indexOf(whitelist, this.request.body.email) === -1) {

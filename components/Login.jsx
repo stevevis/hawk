@@ -19,12 +19,12 @@ var Login = React.createClass({
       <form action="/login" method="post" name="loginForm">
         <div className="row">
           <div className="small-12 columns">
-            <input type="email" name="email" placeholder="Email"/>
+            <input className="radius" type="email" name="email" placeholder="Email"/>
           </div>
         </div>
          <div className="row">
           <div className="large-12 columns">
-            <div className="row collapse">
+            <div className="row collapse postfix-radius">
               <div className="small-9 columns">
                 <input type="password" name="password" placeholder="Password" onKeyPress={this.keyPress}/>
               </div>

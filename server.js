@@ -45,12 +45,23 @@ app.use(koaBody());
 // Initialize the props object, this object will be written to the DOM by the view renderer so that the React 
 // components on the client can use the contents of it to initialize state without AJAX requests.
 app.use(function *(next) {
-  this.state.props = { errors: {} };
+  this.state.props = {};
   yield next;
 });
 
 // Setup authentication middleware that will authenticate the user and set the session cookie.
 authentication.init(app);
+
+// If there are any errors saved in session, copy them to props to be rendered, then delete them from session.
+app.use(function *(next) {
+  if (this.session.errors) {
+    this.state.props.errors = this.session.errors;
+    this.session.errors = false;
+  } else {
+    this.state.props.errors = {};
+  }
+  yield next;
+});
 
 // Initialize the router that will determine the React component that needs to be rendered and the controller that needs
 // to be executed.

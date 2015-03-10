@@ -3,37 +3,85 @@
 @import "hawk_settings";
 @import "compass/css3";
 
+/***** Generic Page Layout *****/
+
+// Thanks for the help http://getbootstrap.com/examples/sticky-footer-navbar/
+
 #hawk {
   height: 100%;
 }
 
 .hawk-wrapper {
   height: 100%;
-  padding-top: $topbar-height;
 }
 
 .nav-wrapper {
-  padding-top: 1px;
   border-bottom: 1px solid $gainsboro;
-  margin-top: -($topbar-height + rem-calc(2px));
 
-  ul.dropdown {
-    border: 1px solid $gainsboro;
+  @media #{$medium-up} {
+    .top-bar {
+      padding: 0 1rem 0 0;
+    }
+
+    .top-bar li.name a {
+      color: $mint-dark;
+    }
+
+    .top-bar-section ul.dropdown {
+      padding: 0.5rem 0;
+      position: relative;
+      background: $ghost;
+      border: 1px solid $iron;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.176);
+    } 
+
+    .top-bar-section ul.dropdown:after, 
+    .top-bar-section ul.dropdown:before { 
+      bottom: 100%; 
+      right: 0%;
+      border: solid transparent;
+      content: " ";
+      height: 0;
+      width: 0;
+      position: absolute;
+      pointer-events: none;
+    } 
+
+    .top-bar-section ul.dropdown:after { 
+      border-color: rgba(250, 250, 250, 0);
+      border-bottom-color: $ghost;
+      border-width: 6px;
+      margin-right: 14px;
+    } 
+
+    .top-bar-section ul.dropdown:before { 
+      border-color: rgba(204, 204, 204, 0);
+      border-bottom-color: $iron; 
+      border-width: 7px;
+      margin-right: 13px;
+    }
+
+    .top-bar-section ul.dropdown {
+      li a {
+        line-height: 2rem;
+      }
+    }
   }
 }
 
-@media #{$medium-up} {
-  .top-bar {
-    padding: 0 1rem 0 0;
-  }
-}
-
-.content-wrapper, .content {
+.content-wrapper {
   height: 100%;
 }
 
+@mixin content {
+
+}
+
 .footer {
-  margin-bottom: -$topbar-height;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding-bottom: 0.5rem;
 
   .footer-content {
     line-height: $topbar-height;
@@ -41,8 +89,11 @@
   }
 }
 
+/***** Home Page *****/
+
 .home {
-  height: 100%;
+  min-height: 100%;
+  position: relative;
   padding: $topbar-height 0;
   // http://sixrevisions.com/css/responsive-background-image/
   background-image: url(../img/northern_hawk_finland-wide.jpg), url(../img/northern_hawk_finland-small.jpg);
@@ -50,6 +101,10 @@
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-size: cover;
+
+  h3 {
+    font-weight: $font-weight-bold;
+  }
 
   h6 {
     margin-top: 0;
@@ -60,14 +115,13 @@
   }
 
   input {
-    margin-bottom: 0.5rem;
     @include input-placeholder {
       font-weight: $font-weight-normal;
     }
   }
 
-  .button {
-    margin-bottom: 0.5rem;
+  .welcome {
+    margin-bottom: $topbar-height;
   }
 }
 
@@ -78,12 +132,6 @@
   margin-bottom: 1rem;
 }
 
-.welcome {
-  h3 {
-    font-weight: $font-weight-bold;
-  }
-}
-
 .login-form {
   @include ghost-block;
 }
@@ -91,6 +139,8 @@
 .signup-form {
   @include ghost-block;
 }
+
+/***** Track an Artist Page *****/
 
 .track {
   @mixin big-input {

@@ -5,6 +5,7 @@ var React = require("react");
 var Router = require("react-router");
 var Route = Router.Route;
 var DefaultRoute = Router.DefaultRoute;
+var NotFoundRouter = Router.NotFoundRoute;
 
 // The master routes module, we'll add the react routes to this
 var routes = require("./routes.js");
@@ -17,6 +18,7 @@ function generateReactRoutes(parent) {
     children.push(generateReactRoutes(route));
     if (route.defaultRoute) {
       children.push(React.createElement(DefaultRoute, { handler: route.handler, key: route.name + ":default" }));
+      children.push(React.createElement(NotFoundRouter, { handler: route.handler, key: route.name + ":notfound" }));
     }
   });
 

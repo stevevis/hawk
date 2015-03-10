@@ -19,17 +19,17 @@ var SignUp = React.createClass({
       <form action="/user" method="post" name="signupForm">
         <div className="row">
           <div className="small-12 columns">
-            <input type="text" placeholder="Name" name="name"/>
+            <input className="radius" type="text" placeholder="Name" name="name"/>
           </div>
         </div>
         <div className="row">
           <div className="small-12 columns">
-            <input type="email" placeholder="Email" name="email"/>
+            <input className="radius" type="email" placeholder="Email" name="email"/>
           </div>
         </div>
          <div className="row">
           <div className="large-12 columns">
-            <div className="row collapse">
+            <div className="row collapse postfix-radius">
               <div className="small-9 columns">
                 <input type="password" placeholder="Password" name="password" onKeyPress={this.keyPress}/>
               </div>

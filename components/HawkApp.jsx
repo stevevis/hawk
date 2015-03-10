@@ -11,7 +11,7 @@ var HawkApp = React.createClass({
   render: function() {
     return (
       <div className="hawk-wrapper">
-        <div className="nav-wrapper">
+        <div className="nav-wrapper fixed">
           <TopBar user={this.state.user}/>
         </div>
         <div className="content-wrapper">

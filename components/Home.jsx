@@ -19,24 +19,22 @@ var Home = React.createClass({
 
     return (
       <div className="home">
-        <div className="content">
-          <div className="row">
-            <div className="small-12 medium-6 columns">
-              <div className="welcome">
-                <h3>Track your favorite artists like a hawk!</h3>
-                <br/>
-                <h4>Tell Music Hawk who your favorite artists are and she will make sure you know whenever they release new music.</h4>
-              </div>
+        <div className="row">
+          <div className="small-12 medium-6 columns">
+            <div className="welcome">
+              <h3>Track your favorite artists like a hawk!</h3>
+              <br/>
+              <h4>Tell Music Hawk who your favorite artists are and she will make sure you know whenever they release new music.</h4>
             </div>
-            <div className="small-12 medium-6 large-4 columns">
-              <div className="login-form">
-                {loginMessage}
-                <Login error={this.props.loginError}/>
-              </div>
-              <div className="signup-form">
-                {signupMessage}
-                <SignUp error={this.props.signupError}/>
-              </div>
+          </div>
+          <div className="small-12 medium-6 large-4 columns">
+            <div className="login-form">
+              {loginMessage}
+              <Login error={this.props.loginError}/>
+            </div>
+            <div className="signup-form">
+              {signupMessage}
+              <SignUp error={this.props.signupError}/>
             </div>
           </div>
         </div>

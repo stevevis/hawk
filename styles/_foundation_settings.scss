@@ -144,7 +144,8 @@ $darkgray-dark      : #434A54;
 $darkgray-light     : #656D78;
 
 // We use these as default colors throughout
-$primary-color: $bluejeans-light;
+$primary-color: $mint-light;
+$primary-color-dark: $mint-dark;
 // $secondary-color: #e7e7e7;
 // $alert-color: #f04124;
 // $success-color: #43AC6A;
@@ -459,7 +460,7 @@ $body-font-weight: $font-weight-normal;
 
 // We use this to control the display property.
 // $button-display: inline-block;
-// $button-margin-bottom: rem-calc(20);
+$button-margin-bottom: rem-calc(13);
 
 // We use these to control button text styles.
 // $button-font-family: $body-font-family;
@@ -648,7 +649,7 @@ $body-font-weight: $font-weight-normal;
 // $include-html-form-classes: $include-html-classes;
 
 // We use this to set the base for lots of form spacing and positioning styles
-// $form-spacing: rem-calc(16);
+$form-spacing: rem-calc(13);
 
 // We use these to style the labels in different ways
 // $form-label-pointer: pointer;
@@ -1416,7 +1417,7 @@ $topbar-height: rem-calc(50);
 
 // Controlling the styles for the title in the top bar
 $topbar-title-weight: $font-weight-bold;
-$topbar-title-font-size: rem-calc(16);
+$topbar-title-font-size: rem-calc(18);
 
 // Set the link colors and styles for top-level nav
 $topbar-link-color: $jet;
@@ -1442,9 +1443,9 @@ $topbar-link-bg-hover: $smoke;
 // Style the top bar dropdown elements
 $topbar-dropdown-bg: $white-smoke;
 $topbar-dropdown-link-color: $jet;
-// $topbar-dropdown-link-color-hover: $topbar-link-color-hover;
-$topbar-dropdown-link-bg: $white-smoke;
-$topbar-dropdown-link-bg-hover: $smoke;
+$topbar-dropdown-link-color-hover: $primary-color-dark;
+$topbar-dropdown-link-bg: $ghost;
+$topbar-dropdown-link-bg-hover: $ghost;
 // $topbar-dropdown-link-weight: $font-weight-normal;
 // $topbar-dropdown-toggle-size: 5px;
 $topbar-dropdown-toggle-color: $jet;

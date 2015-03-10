@@ -21,7 +21,7 @@ var TopBar = React.createClass({
       return (
         <ul className="right">
           <li className="has-dropdown">
-            <a href="#">Hello, {this.props.user.name}</a>
+            <a href="#">{this.props.user.name}</a>
             <ul className="dropdown">
               <li><a href="/logout">Log out</a></li>
             </ul>
@@ -38,7 +38,7 @@ var TopBar = React.createClass({
       titleLink = "feed";
     }
     return (
-      <nav className="top-bar" data-topbar role="navigation">
+      <nav className="top-bar" data-topbar role="navigation" data-options="mobile_show_parent_link:false">
         <ul className="title-area">
           <li className="name">
             <h1><li><Link to={titleLink}>Music Hawk</Link></li></h1>

@@ -57,7 +57,7 @@ var initReactRouter = function(app) {
 
     return yield next;
   });
-}
+};
 
 exports.init = function(app) {
   // The react router must come first because it determines which react component needs to be rendered and sets that 

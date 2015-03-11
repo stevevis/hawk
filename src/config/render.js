@@ -6,7 +6,7 @@ var React = require("react");
 var logger = require("../config/logger");
 
 exports.init = function(app) {
-  app.use(koaViews(path.join(__dirname, "../dist/views"), {
+  app.use(koaViews(path.join(__dirname, "../../dist/views"), {
     map: {
       html: "handlebars"
     }
@@ -17,8 +17,13 @@ exports.init = function(app) {
   // the props from ctx.state.props (set by the Koa Controller). It then injects the React markup into the view template
   // in this.state.view (also set by the Koa Controller) and renders it to the client.
   app.use(function *() {
-    var view = this.state.view ? this.state.view : "index";
+    // If the view isn't set, or the request method isn't GET, we shouldn't be here...
+    if (!this.state.view || this.method !== "GET") {
+      logger.warn("Render function called with no view or invalid method: method=%s, path=%s", this.method, this.path);
+      return this.redirect("/");
+    }
+
     var content = React.renderToString(React.createElement(this.state.reactComponent, this.state.props));
-    yield this.render(view, { html: content, props: JSON.stringify(this.state.props) });
+    yield this.render(this.state.view, { html: content, props: JSON.stringify(this.state.props) });
   });
 };

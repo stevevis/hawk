@@ -32,7 +32,7 @@ if (app.env === "development") {
   app.use(livereload());
   app.use(requestLogger());
   // In prod assets are served from CloudFront
-  app.use(staticCache(path.join(__dirname, "dist"), {
+  app.use(staticCache(path.join(__dirname, "../dist"), {
     gzip: true
   }));
 }

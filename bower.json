@@ -6,7 +6,7 @@
     "Steve Viselli <steve.viselli@gmail.com>"
   ],
   "description": "Watch your favourite bands like a hawk!",
-  "main": "app.js",
+  "main": "src/app.js",
   "license": "MIT",
   "private": true,
   "ignore": [

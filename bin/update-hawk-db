@@ -13,18 +13,18 @@ var argv = require("yargs")
     .argv;
 
 // Config
-var logger = require("../config/logger");
-var AWSConfig = require("../config/aws");
-var mongoConfig = require("../config/mongo");
+var logger = require("../src/config/logger");
+var AWSConfig = require("../src/config/aws");
+var mongoConfig = require("../src/config/mongo");
 
 // Models
-var Artist = require("../models/Artist");
-var DatabaseUpdate = require("../models/DatabaseUpdate");
+var Artist = require("../src/models/Artist");
+var DatabaseUpdate = require("../src/models/DatabaseUpdate");
 
 // Services
-var EC2Service = require("../services/EC2Service");
-var SNSService = require("../services/SNSService");
-var MusicBrainzService = require("../services/MusicBrainzService");
+var EC2Service = require("../src/services/EC2Service");
+var SNSService = require("../src/services/SNSService");
+var MusicBrainzService = require("../src/services/MusicBrainzService");
 
 // The stats for the last update run.
 var lastUpdateStats;

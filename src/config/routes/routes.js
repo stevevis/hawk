@@ -13,7 +13,7 @@ var Track = require("../../components/Track.jsx");
  */
 var API = React.createClass({
   render: function() {
-    return ("");
+    return (React.createElement("div"));
   }
 });
 

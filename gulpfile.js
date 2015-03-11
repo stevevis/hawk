@@ -3,8 +3,9 @@
 var _ = require("lodash");
 var fs = require("fs");
 var del = require("del");
-var shortId = require("shortid");
+var path = require("path");
 var gulp = require("gulp");
+var shortId = require("shortid");
 var plugins = require("gulp-load-plugins")();
 var browserify = require("browserify");
 var watchify = require("watchify");
@@ -12,22 +13,22 @@ var reactify = require("reactify");
 var envify = require("envify");
 var source = require("vinyl-source-stream");
 var parallelize = require("concurrent-transform");
-var AWSConfig = require("./config/aws");
+var AWSConfig = require("./src/config/aws");
 
 var version = shortId.generate();
 var prod = process.env.NODE_ENV === "production";
 
 // Source files to read from
 var src = {
-  app: "./app.jsx",
-  style: "./styles/main.scss",
-  scss: "./styles/**/*.scss",
-  images: "./images/**/*",
-  views: "./views/**/*",
-  server: "./server.js",
+  app: "./src/app.jsx",
+  style: "./src/styles/main.scss",
+  scss: "./src/styles/**/*.scss",
+  images: "./src/images/**/*",
+  views: "./src/views/**/*",
+  server: "./src/server.js",
   vendor: {
     css: [
-
+      
     ],
     head: [
       "./bower_components/modernizr/modernizr.js"
@@ -43,7 +44,7 @@ var src = {
 
 // Paths to load when compiling SCSS
 var scssLoadPath = [
-  "styles",
+  "src/styles",
   "bower_components/foundation/scss"
 ];
 
@@ -55,6 +56,8 @@ var dist = {
   img: "./dist/img",
   views: "./dist/views"
 };
+
+var manifestFile = "manifest.json";
 
 // File names for compiled assets
 var out = {
@@ -212,16 +215,17 @@ gulp.task("version-images", ["images"], function() {
   var publisher = plugins.awspublish.create(AWSConfig.S3.bucket);
   var headers = AWSConfig.S3.headers;
 
-  return gulp.src(["./dist/img/*"])
+  return gulp.src([dist.img + "/*"])
     .pipe(plugins.revAll())
     .pipe(plugins.rename(function(path) {
+      // e.g. ./northern_hawk.df80e03c.jpg -> ./XJVufTnd/images/northern_hawk.df80e03c.jpg
       path.dirname += "/" + version + "/img";
     }))
     .pipe(plugins.awspublish.gzip())
     .pipe(parallelize(publisher.publish(headers)))
     .pipe(publisher.cache())
     .pipe(plugins.awspublish.reporter())
-    .pipe(plugins.revAll.manifest({ fileName: "manifest.json" }))
+    .pipe(plugins.revAll.manifest({ fileName: manifestFile }))
     .pipe(gulp.dest(dist.img));
 });
 
@@ -232,16 +236,17 @@ gulp.task("version-assets", ["vendors", "browserify", "scss", "version-images"],
   var publisher = plugins.awspublish.create(AWSConfig.S3.bucket);
   var headers = AWSConfig.S3.headers;
 
-  return gulp.src(["./dist/css/*.css", "./dist/js/*.js"])
+  return gulp.src([dist.css + "/*.css", dist.js + "/*.js"])
     .pipe(plugins.revAll())
     .pipe(plugins.rename(function(path) {
+      // e.g. ./app.df80e03c.js -> ./XJVufTnd/js/app.df80e03c.js
       path.dirname += "/" + version + "/" + path.extname.substr(1);
     }))
     .pipe(plugins.awspublish.gzip())
     .pipe(parallelize(publisher.publish(headers)))
     .pipe(publisher.cache())
     .pipe(plugins.awspublish.reporter())
-    .pipe(plugins.revAll.manifest({ fileName: "manifest.json" }))
+    .pipe(plugins.revAll.manifest({ fileName: manifestFile }))
     .pipe(gulp.dest(dist.root));
 });
 
@@ -249,7 +254,7 @@ gulp.task("version-assets", ["vendors", "browserify", "scss", "version-images"],
  * Replace paths to local assets with paths to versioned assets in cloudfront.
  */
 gulp.task("use-versioned-assets", ["version-assets"], function() {
-  var manifest = JSON.parse(fs.readFileSync("./dist/manifest.json", "utf8"));
+  var manifest = JSON.parse(fs.readFileSync(path.join(dist.root, manifestFile), "utf8"));
   var viewStream = gulp.src([src.views]);
   _.forOwn(manifest, function(value, key) {
     var ext = key.split(".").slice(-1)[0];
@@ -296,9 +301,10 @@ gulp.task("dev", ["vendors", "watch"], function() {
       ".git",
       "node_modules/**/node_modules",
       "bower_components",
-      "images",
-      "views",
-      "dist"
+      src.scss,
+      src.images,
+      src.views,
+      dist.root
     ]
   }).on("restart", function() {
     // Give the server a chance to restart and connect to databases etc before reloading the page

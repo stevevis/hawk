@@ -4,7 +4,7 @@
   "description": "Watch your favorite bands like a hawk!",
   "author": "Steve Viselli",
   "private": "true",
-  "main": "app.js",
+  "main": "src/app.js",
   "bin": {
     "update-hawk-db": "./bin/update-hawk-db"
   },

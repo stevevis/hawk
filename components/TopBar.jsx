@@ -34,17 +34,20 @@ var TopBar = React.createClass({
   },
   render: function() {
     var titleLink = "hawk";
+    var menuToggle = "";
+    
     if (this.props.user) {
       titleLink = "feed";
+      menuToggle = <li className="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>;
     }
+
     return (
       <nav className="top-bar" data-topbar role="navigation" data-options="mobile_show_parent_link:false">
         <ul className="title-area">
           <li className="name">
             <h1><li><Link to={titleLink}>Music Hawk</Link></li></h1>
           </li>
-          { /* Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone */ }
-          <li className="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+          {menuToggle}
         </ul>
 
         <section className="top-bar-section">

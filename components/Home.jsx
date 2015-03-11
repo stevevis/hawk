@@ -24,7 +24,7 @@ var Home = React.createClass({
             <div className="welcome">
               <h3>Track your favorite artists like a hawk!</h3>
               <br/>
-              <h4>Tell Music Hawk who your favorite artists are and she will make sure you know whenever they release new music.</h4>
+              <h4>Tell <span className="primary">Music Hawk</span> who your favorite artists are and she will make sure you know whenever they release new music.</h4>
             </div>
           </div>
           <div className="small-12 medium-6 large-4 columns">

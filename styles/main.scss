@@ -24,7 +24,7 @@
     }
 
     .top-bar li.name a {
-      color: $mint-dark;
+      color: $primary-color-dark;
     }
 
     .top-bar-section ul.dropdown {
@@ -87,6 +87,10 @@
     line-height: $topbar-height;
     font-size: 90%;
   }
+}
+
+span.primary {
+  color: $primary-color-dark;
 }
 
 /***** Home Page *****/

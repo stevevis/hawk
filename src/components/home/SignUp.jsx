@@ -1,35 +1,39 @@
 "use strict";
 
 var React = require("react");
-var request = require("superagent");
 var validator = require("validator");
 
-var Login = React.createClass({
-  login: function(e) {
+var SignUp = React.createClass({
+  createUser: function(e) {
     // TODO Validate the form before submitting
-    document.loginForm.submit();
+    document.signupForm.submit();
   },
   keyPress: function(e) {
     if (e.key === "Enter") {
-      this.login();
+      this.createUser();
     }
   },
   render: function() {
     return (
-      <form action="/login" method="post" name="loginForm">
+      <form action="/signup" method="post" name="signupForm">
         <div className="row">
           <div className="small-12 columns">
-            <input className="radius" type="email" name="email" placeholder="Email"/>
+            <input className="radius" type="text" placeholder="Name" name="name"/>
+          </div>
+        </div>
+        <div className="row">
+          <div className="small-12 columns">
+            <input className="radius" type="email" placeholder="Email" name="email"/>
           </div>
         </div>
          <div className="row">
           <div className="large-12 columns">
             <div className="row collapse postfix-radius">
               <div className="small-9 columns">
-                <input type="password" name="password" placeholder="Password" onKeyPress={this.keyPress}/>
+                <input type="password" placeholder="Password" name="password" onKeyPress={this.keyPress}/>
               </div>
               <div className="small-3 columns">
-                <a href="#" className="button postfix" onClick={this.login}>Login</a>
+                <a href="#" className="button postfix" onClick={this.createUser}>Sign Up</a>
               </div>
             </div>
           </div>
@@ -39,4 +43,4 @@ var Login = React.createClass({
   }
 });
 
-module.exports = Login;
+module.exports = SignUp;

@@ -10,9 +10,10 @@ exports.post = function *() {
       logger.error("Encountered an error trying to authenticate user with local strategy", err, info);
       throw err;
     }
+
     if (user === false) {
       logger.warn("Failed to authenticated user");
-      ctx.session.errors = { loginError: true };
+      ctx.session.errors = { loginError: "Sorry, we couldn't log you in. Please try again later." };
       ctx.redirect("/");
     } else {
       yield ctx.login(user);

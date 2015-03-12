@@ -22,14 +22,10 @@ function generateReactRoutes(parent) {
     }
   });
 
-  var props = { name: parent.name, handler: parent.handler, key: parent.name };
-  if (parent.path) {
-    props.path = parent.path;
-  }
-
+  var props = { name: parent.name, path: parent.path, handler: parent.handler, key: parent.name };
   return React.createElement(Route, props, children);
 }
 
-routes.react = generateReactRoutes(routes.source);
+routes.react = generateReactRoutes(routes.app);
 
 module.exports = routes;

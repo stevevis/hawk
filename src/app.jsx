@@ -9,6 +9,7 @@ var routes = require("./config/routes/client");
 // Initialize Foundation
 $(document).foundation();
 
+// Parse the properties sent by the server
 var props = JSON.parse(document.getElementById("props").innerHTML);
 
 // Initialize the React router

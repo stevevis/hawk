@@ -5,7 +5,7 @@
 
 /***** Generic Page Layout *****/
 
-// Thanks for the help http://getbootstrap.com/examples/sticky-footer-navbar/
+// Thanks - http://getbootstrap.com/examples/sticky-footer-navbar/
 
 #hawk {
   height: 100%;
@@ -18,21 +18,23 @@
 .nav-wrapper {
   border-bottom: 1px solid $gainsboro;
 
+  .top-bar li.name a {
+    color: $primary-color-dark;
+  }
+
   @media #{$medium-up} {
     .top-bar {
       padding: 0 1rem 0 0;
     }
 
-    .top-bar li.name a {
-      color: $primary-color-dark;
-    }
-
     .top-bar-section ul.dropdown {
+      margin-top: -5px;
       padding: 0.5rem 0;
       position: relative;
       background: $ghost;
       border: 1px solid $iron;
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.176);
+      border-radius: $global-radius;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.176);
     } 
 
     .top-bar-section ul.dropdown:after, 
@@ -100,7 +102,7 @@ span.primary {
   position: relative;
   padding: $topbar-height 0;
   // http://sixrevisions.com/css/responsive-background-image/
-  background-image: url(../img/northern_hawk_finland-wide.jpg), url(../img/northern_hawk_finland-small.jpg);
+  background-image: url(/img/northern_hawk_finland-wide.jpg), url(/img/northern_hawk_finland-small.jpg);
   background-position: center center;
   background-repeat: no-repeat;
   background-attachment: fixed;
@@ -144,9 +146,17 @@ span.primary {
   @include ghost-block;
 }
 
+/***** Release Feed Page *****/
+
+.feed {
+  padding-top: 1rem;
+}
+
 /***** Track an Artist Page *****/
 
 .track {
+  padding-top: 1rem;
+
   @mixin big-input {
     font-size: 3.5rem;
     background: none;
@@ -161,13 +171,93 @@ span.primary {
 
   .input-artist {
     @include big-input;
-    margin-top: 1rem;
     box-shadow: none;
     height: auto;
     color: $steel;
+    margin-bottom: 1rem;
   }
 
   .input-artist:focus {
     @include big-input;
+  }
+
+  .artist-list {
+    margin: 2rem 0;
+  }
+
+  h4 {
+    margin: 0;
+    line-height: 68px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .artist {
+    height: 68px;
+    position: relative;
+    background: none;
+    list-style: none;
+    padding-left: 1rem;
+    border: 1px solid $body-bg;
+    border-right: 1px solid $gainsboro;
+  }
+
+  .artist-spacer {
+    height: 24px;
+    list-style: none;
+    border-right: 1px solid $gainsboro;
+  }
+
+  .artist.active {
+    position: relative;
+    background: #F5F5F5;
+    border: 1px solid $gainsboro;
+    border-left: 1px solid $body-bg;
+  }
+
+  .artist.active:after,
+  .artist.active:before {
+      left: 100%;
+      top: 50%;
+      border: solid transparent;
+      content: " ";
+      height: 0;
+      width: 0;
+      position: absolute;
+      pointer-events: none;
+  }
+
+  .artist.active:after {
+      border-color: rgba(245, 245, 245, 0);
+      border-left-color: #F5F5F5;
+      border-width: 34px;
+      margin-top: -34px;
+  }
+
+  .artist.active:before {
+      border-color: rgba(221, 221, 221, 0);
+      border-left-color: $gainsboro;
+      border-width: 35px;
+      margin-top: -35px;
+  }
+
+  .release-list {
+    margin: 2rem 0;
+    padding-left: 3rem;
+  }
+
+  .release {
+    margin-bottom: 1rem;
+  }
+
+  .cover-image {
+    width: 100%;
+    height: 0;
+    padding-bottom: 100%;
+    background-image: url(/img/no_cover.jpg);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
   }
 }

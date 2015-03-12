@@ -1,20 +1,29 @@
 "use strict";
 
 var React = require("react");
-var Footer = require("./Footer.jsx");
-var Login = require("./Login.jsx");
-var SignUp = require("./SignUp.jsx");
+var Navigation = require("react-router").Navigation;
+var Footer = require("./home/Footer.jsx");
+var Login = require("./home/Login.jsx");
+var SignUp = require("./home/SignUp.jsx");
 
 var Home = React.createClass({
+  mixins: [Navigation],
+
+  componentDidMount: function() {
+    if (this.props.user) {
+      this.replaceWith("feed");
+    }
+  },
+
   render: function() {
     var loginMessage = <h6>Got an account? Log in!</h6>;
-    if (this.props.data.errors.loginError) {
-      loginMessage = <h6 className="error">Sorry, we couldn't log you in.<br/>Please try again.</h6>
+    if (this.props.errors.loginError) {
+      loginMessage = <h6 className="error">{{__html: this.props.errors.loginError}}</h6>;
     }
 
     var signupMessage = <h6>New to Hawk? Sign up!</h6>;
-    if (this.props.data.errors.signupError) {
-      signupMessage = <h6 className="error">Sorry, you're not on the list!</h6>
+    if (this.props.errors.signupError) {
+      signupMessage = <h6 className="error">{{__html: this.props.errors.signupError}}</h6>;
     }
 
     return (
@@ -30,11 +39,11 @@ var Home = React.createClass({
           <div className="small-12 medium-6 large-4 columns">
             <div className="login-form">
               {loginMessage}
-              <Login error={this.props.loginError}/>
+              <Login/>
             </div>
             <div className="signup-form">
               {signupMessage}
-              <SignUp error={this.props.signupError}/>
+              <SignUp/>
             </div>
           </div>
         </div>

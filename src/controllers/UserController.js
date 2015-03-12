@@ -11,13 +11,21 @@ var whitelist = [
 
 exports.post = function *() {
   if (_.indexOf(whitelist, this.request.body.email) === -1) {
-    this.session.errors = { signupError: true };
+    this.session.errors = { signupError: "Sorry, you're not on the list. Check back when we launch!" };
     return this.redirect("/");
   }
 
-  var user = new User(this.request.body);
-  user = yield user.save();
-  logger.debug("Created new user", user.toJSON());
+  try {
+    var user = new User(this.request.body);
+    user = yield user.save();
+    logger.debug("Created new user", user.toJSON());
+  } catch (e) {
+    logger.warn(e.message);
+    if (e.message.match(/duplicate key error/)) {
+      this.session.errors = { signupError: "It looks like you're already signed up." };
+    }
+    return this.redirect("/");
+  }
 
   yield this.login(user);
   this.redirect("track");

@@ -1,21 +1,25 @@
 "use strict";
 
 var React = require("react");
-var Link = require("react-router").Link;
+var State = require("react-router").State;
+var NavLink = require("./NavLink.jsx");
 
 var TopBar = React.createClass({
+  mixins: [ State ],
+
   renderLeftLinks: function() {
     if (this.props.user) {
       return (
         <ul className="left">
-          <li><Link to="feed">Feed</Link></li>
-          <li><Link to="track">Track</Link></li>
+          <li><NavLink to="feed">Feed</NavLink></li>
+          <li><NavLink to="track">Track</NavLink></li>
         </ul>
       );
     } else {
       return ("");
     }
   },
+
   renderRightLinks: function() {
     if (this.props.user) {
       return (
@@ -32,6 +36,7 @@ var TopBar = React.createClass({
       return ("");
     }
   },
+
   render: function() {
     var titleLink = "hawk";
     var menuToggle = "";
@@ -45,7 +50,7 @@ var TopBar = React.createClass({
       <nav className="top-bar" data-topbar role="navigation" data-options="mobile_show_parent_link:false">
         <ul className="title-area">
           <li className="name">
-            <h1><li><Link to={titleLink}>Music Hawk</Link></li></h1>
+            <h1><li><NavLink to={titleLink}>Music Hawk</NavLink></li></h1>
           </li>
           {menuToggle}
         </ul>
@@ -56,7 +61,7 @@ var TopBar = React.createClass({
         </section>
       </nav>
     );
-  }
+  },
 });
 
 module.exports = TopBar;

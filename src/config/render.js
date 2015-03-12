@@ -19,7 +19,7 @@ exports.init = function(app) {
   app.use(function *() {
     // If the view isn't set, or the request method isn't GET, we shouldn't be here...
     if (!this.state.view || this.method !== "GET") {
-      logger.warn("Render function called with no view or invalid method: method=%s, path=%s", this.method, this.path);
+      logger.warn("Render function called with no view or invalid method, redirecting to home: method=%s, path=%s", this.method, this.path);
       return this.redirect("/");
     }
 

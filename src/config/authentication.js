@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * Thanks http://ghost-dozoisch.rhcloud.com/integrating-passportjs-with-koa/
+ * Thanks - http://ghost-dozoisch.rhcloud.com/integrating-passportjs-with-koa/
  */
 
 var co = require("co");

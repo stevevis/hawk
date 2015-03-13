@@ -7,6 +7,7 @@ var User = require("../models/User");
 var whitelist = [
   "test@hawk.com",
   "steve@hawk.com",
+  "tima@hawk.com"
 ];
 
 exports.post = function *() {

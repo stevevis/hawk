@@ -36,6 +36,7 @@ var ArtistSelector = React.createClass({
     var user = UserStore.getUser();
     UserActions.watchArtist(user._id, artist._id);
     $(this.refs["watch-" + artist._id].getDOMNode()).addClass("watching");
+    $(this.refs["watch-" + artist._id].getDOMNode()).html("Watching");
   },
 
   render: function() {

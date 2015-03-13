@@ -197,15 +197,6 @@ span.primary {
     margin: 2rem 0;
   }
 
-  h4 {
-    margin: 0;
-    line-height: 68px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    float: left;
-  }
-
   .artist {
     height: 68px;
     position: relative;
@@ -253,6 +244,16 @@ span.primary {
       border-left-color: $gainsboro;
       border-width: 35px;
       margin-top: -35px;
+  }
+
+  .artist h4 {
+    margin: 0;
+    line-height: 68px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    float: left;
+    width: 100%;
   }
 
   .artist.active h4 {

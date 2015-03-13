@@ -3,7 +3,7 @@
 var HawkApp = require("../../components/HawkApp.jsx");
 var Home = require("../../components/Home.jsx");
 var Feed = require("../../components/Feed.jsx");
-var Track = require("../../components/Track.jsx");
+var Watch = require("../../components/Watch.jsx");
 
 /* 
  * The master routes list - We use the React components directly because browserify won't include them if we load them
@@ -33,15 +33,15 @@ var routes = {
         methods: ["GET"],
         handler: Feed,
         controller: "IndexController",
-        secure: true,
+        secure: true
       },
       {
         name: "track",
-        path: "track",
+        path: "watch",
         methods: ["GET"],
-        handler: Track,
+        handler: Watch,
         controller: "IndexController",
-        secure: true,
+        secure: true
       }
     ]
   },

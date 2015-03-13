@@ -19,6 +19,8 @@ exports.post = function *() {
     var user = new User(this.request.body);
     user = yield user.save();
     logger.debug("Created new user", user.toJSON());
+    yield this.login(user);
+    this.redirect("watch");
   } catch (e) {
     logger.warn(e.message);
     if (e.message.match(/duplicate key error/)) {
@@ -26,7 +28,4 @@ exports.post = function *() {
     }
     return this.redirect("/");
   }
-
-  yield this.login(user);
-  this.redirect("track");
 };

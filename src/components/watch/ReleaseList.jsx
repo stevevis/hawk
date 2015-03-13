@@ -6,10 +6,16 @@ var ImageLoader = require("react-imageloader");
 var ReleaseList = React.createClass({
   render: function() {
     var releaseNodes = [];
+    var maxReleases = 0;
 
     if (this.props.releases.length > 0) {
+      var top = $(".artist-list").offset().top;
+      // Each release is about 142px high (including margins)
+      maxReleases = Math.floor((window.innerHeight - top) / 142);
+
       this.props.releases.forEach(function(release) {
-        if (releaseNodes.length >= 4) {
+        // This makes sure the release list always fits niceley on the screen
+        if (releaseNodes.length >= maxReleases) {
           return;
         }
 
@@ -34,6 +40,14 @@ var ReleaseList = React.createClass({
         {releaseNodes}
       </div>
     );
+  },
+
+  componentDidMount: function() {
+    $(".release-list").sticky({topSpacing:50, bottomSpacing: 50, getWidthFrom: ".artist-list"});
+  },
+
+  componentDidUpdate: function() {
+    $(".release-list").css("top", "50px");
   }
 });
 

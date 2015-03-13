@@ -17,9 +17,15 @@ exports.init = function(app) {
   // the props from ctx.state.props (set by the Koa Controller). It then injects the React markup into the view template
   // in this.state.view (also set by the Koa Controller) and renders it to the client.
   app.use(function *() {
-    // If the view isn't set, or the request method isn't GET, we shouldn't be here...
-    if (!this.state.view || this.method !== "GET") {
-      logger.warn("Render function called with no view or invalid method, redirecting to home: method=%s, path=%s", this.method, this.path);
+    // Only GET requests should make it to the render function
+    if (this.method !== "GET") {
+      logger.warn("Render function called with incorrect method: %s %s", this.method, this.path);
+      return;
+    }
+
+    // If the view isn't set on a GET request it means no controller matched
+    if (!this.state.view) {
+      logger.warn("Render function called with no view set, redirecting to home:, path=%s", this.path);
       return this.redirect("/");
     }
 

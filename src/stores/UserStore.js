@@ -19,6 +19,14 @@ function updateName(name) {
   }
 }
 
+function watchArtist(artistId) {
+  if (!_user.artists) {
+    _user.artists = [];
+  }
+
+  _user.artists.push(artistId);
+}
+
 var UserStore = assign({}, EventEmitter.prototype, {
 
   getUser: function() {
@@ -52,6 +60,13 @@ AppDispatcher.register(function(action) {
       var name = action.name.trim();
       if (name !== "") {
         updateName(name);
+      }
+      UserStore.emitChange();
+      break;
+
+    case ActionType.USER_WATCH_ARTIST:
+      if (action.artistId) {
+        watchArtist(action.artistId);
       }
       UserStore.emitChange();
       break;

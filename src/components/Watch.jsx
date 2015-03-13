@@ -2,10 +2,9 @@
 
 var React = require("react");
 var request = require("superagent");
-var UserActions = require("../actions/UserActions");
-var ArtistSelector = require("./track/ArtistSelector.jsx");
+var ArtistSelector = require("./watch/ArtistSelector.jsx");
 
-var Track = React.createClass({
+var Watch = React.createClass({
 
   getInitialState: function() {
     return {
@@ -35,23 +34,15 @@ var Track = React.createClass({
     }
   },
 
-  handleKeyPress: function(e) {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      var name = this.refs.artistInput.getDOMNode().value;
-      UserActions.updateName(name);
-    }
-  },
-
   render: function() {
     return (
-      <div className="track">
+      <div className="watch">
 
         <div className="row">
           <form>
             <div className="small-12 large-10 large-centered columns">
               <input type="text" className="input-artist" placeholder="Who's your favorite artist?" autoFocus="true" 
-                  ref="artistInput" onChange={this.handleChange} onKeyPress={this.handleKeyPress}/>
+                  ref="artistInput" onChange={this.handleChange}/>
             </div>
           </form>
         </div>
@@ -63,4 +54,4 @@ var Track = React.createClass({
   }
 });
 
-module.exports = Track;
+module.exports = Watch;

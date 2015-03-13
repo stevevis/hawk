@@ -12,7 +12,7 @@ var TopBar = React.createClass({
       return (
         <ul className="left">
           <li><NavLink to="feed">Feed</NavLink></li>
-          <li><NavLink to="track">Track</NavLink></li>
+          <li><NavLink to="track">Watch</NavLink></li>
         </ul>
       );
     } else {

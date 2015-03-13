@@ -35,9 +35,9 @@ var src = {
     ],
     js: [
       "./bower_components/jquery/dist/jquery.js",
+      "./bower_components/sticky/jquery.sticky.js",
       "./bower_components/fastclick/lib/fastclick.js",
       "./bower_components/foundation/js/foundation.js",
-      "./bower_components/foundation/js/foundation/foundation.topbar.js"
     ]
   }
 };
@@ -120,7 +120,8 @@ function bundle(watch) {
  * Gulp Tasks.
  */
 gulp.task("default", ["clean", "setDev", "vendors", "watch", "dev"]);
-gulp.task("build", ["clean", "setProd", "vendors", "browserify", "scss", "version-assets", "use-versioned-assets"]);
+gulp.task("build", ["clean", "setProd", "vendors", "browserify", "scss", "version-images", "version-assets", 
+  "use-versioned-assets"]);
 
 gulp.task("setDev", function() {
   prod = false;
@@ -253,12 +254,19 @@ gulp.task("version-assets", ["vendors", "browserify", "scss", "version-images"],
 /**
  * Replace paths to local assets with paths to versioned assets in cloudfront.
  */
-gulp.task("use-versioned-assets", ["version-assets"], function() {
-  var manifest = JSON.parse(fs.readFileSync(path.join(dist.root, manifestFile), "utf8"));
+gulp.task("use-versioned-assets", ["version-images", "version-assets"], function() {
+  var imageManifest = JSON.parse(fs.readFileSync(path.join(dist.img, manifestFile), "utf8"));
+  var assetManifest = JSON.parse(fs.readFileSync(path.join(dist.root, manifestFile), "utf8"));
+  var manifest = _.assign(imageManifest, assetManifest);
+
   var viewStream = gulp.src([src.views]);
   _.forOwn(manifest, function(value, key) {
     var ext = key.split(".").slice(-1)[0];
-    viewStream.pipe(plugins.replace(ext + "/" + key, AWSConfig.CloudFront.URL + "/" + value));
+    if (ext === "js" || ext === "css") {
+      viewStream.pipe(plugins.replace("/" + ext + "/" + key, AWSConfig.CloudFront.URL + "/" + value));
+    } else {
+      viewStream.pipe(plugins.replace("/img/" + key, AWSConfig.CloudFront.URL + "/" + value));
+    }
   });
   viewStream.pipe(gulp.dest(dist.views));
 });

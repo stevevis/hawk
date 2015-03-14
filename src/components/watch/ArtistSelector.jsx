@@ -14,8 +14,27 @@ var ArtistSelector = React.createClass({
   },
 
   componentWillReceiveProps: function(nextProps) {
-    // If we have artists to render, set the first one to active and show it's releases
-    if (this.state.releases.length === 0 && nextProps.artists.length > 0) {
+    if (nextProps.artists.length === 0) {
+      return this.setState({ releases: [] });
+    }
+
+    // Figure out if the new artists array and the old artists array are different
+    var newArtists = false;
+    if (this.props.artists.length !== nextProps.artists.length) {
+      // If the arrays are different size, they are differnt
+      newArtists = true;
+    } else {
+      // If the arrays are the same size, we need to compare the ID of each artist
+      for (var i = 0; i < nextProps.artists.length; i++) {
+        if (nextProps.artists[i]._id !== this.props.artists[i]._id) {
+          newArtists = true;
+          break;
+        }
+      }
+    }
+
+    // If we have new artists to render, set the first one to active and show it's releases
+    if (newArtists) {
       var releases = nextProps.artists[0].releases;
       this.setState({ releases: releases });
     }

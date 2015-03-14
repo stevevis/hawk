@@ -17,14 +17,15 @@ var ArtistSchema = mongoose.Schema({
 ArtistSchema.statics.findByName = function(name) {
   console.log("Searching for " + regexEscape(name));
   return this.aggregate([
-    { $match: { name: new RegExp(regexEscape(name), "i") } },
-    { $unwind: "$releases" },
-    { $sort: { "releases.year": -1, "releases.month": -1, "releases.day": -1 } },
-    { $limit: 50 },
-    { $group: { _id: "$_id", name: { $first: "$name" }, year: { $max: "$releases.year" }, 
+    { $match: { name: new RegExp(regexEscape(name), "i") } }, // match the search term anywhere in the artist name
+    { $unwind: "$releases" }, // split the releases for each artist into individual rows
+    { $sort: { "releases.year": -1, "releases.month": -1, "releases.day": -1 } }, // sort by release date
+    { $limit: 200 }, // limit the number of releases to the 200 most recent
+    { $group: { _id: "$_id", name: { $first: "$name" }, year: { $max: "$releases.year" }, // group back up by artist
       releases: { $push: { year: "$releases.year", month: "$releases.month", day: "$releases.day", name: "$releases.name", 
         cover: { $concat: [ "http://coverartarchive.org/release-group/", "$releases.rgid", "/front-250" ] } } } } },
-    { $sort: { "year": -1 } }
+    { $sort: { "year": -1 } }, // sort artists by the year of their most recent release
+    { $limit: 10 } // limit to 10 artist search results
   ]).exec();
 };
 

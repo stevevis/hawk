@@ -24,7 +24,7 @@ var Watch = React.createClass({
         request.get("/api/artist")
           .query({ name: name })
           .end(this.renderArtists);
-      }.bind(this), 1000);
+      }.bind(this), 500);
     }
   },
 

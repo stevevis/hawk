@@ -43,11 +43,11 @@ var ReleaseList = React.createClass({
   },
 
   componentDidMount: function() {
-    $(".release-list").sticky({topSpacing:50, bottomSpacing: 50, getWidthFrom: ".artist-list"});
+    $(".release-list").sticky({topSpacing:60, bottomSpacing: 30, getWidthFrom: ".artist-list"});
   },
 
   componentDidUpdate: function() {
-    $(".release-list").css("top", "50px");
+    $(".release-list").css("top", "60px");
   }
 });
 

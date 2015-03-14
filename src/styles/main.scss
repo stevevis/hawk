@@ -169,6 +169,10 @@ span.primary {
 .watch {
   padding-top: 1rem;
 
+  .artist-search {
+    margin-bottom: 1rem;
+  }
+
   @mixin big-input {
     font-size: 3.5rem;
     background: none;
@@ -186,15 +190,28 @@ span.primary {
     box-shadow: none;
     height: auto;
     color: $steel;
-    margin-bottom: 1rem;
+    margin-bottom: 0;
   }
 
   .input-artist:focus {
     @include big-input;
   }
 
-  .artist-list {
+  .loading-svg {
+    display: block;
+  }
+
+  .loading-svg-line {
+    stroke: $primary-color-dark;
+    stroke-width: 1.5px;
+  }
+
+  .artist-selector {
     margin: 2rem 0;
+  }
+
+  .artist-list {
+    margin: 0;
   }
 
   .artist {
@@ -283,7 +300,7 @@ span.primary {
   }
 
   .release-list {
-    margin: 2rem 0;
+    margin: 24px 0;
     padding-left: 3rem;
   }
 

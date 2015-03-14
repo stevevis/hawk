@@ -15,7 +15,6 @@ var ArtistSchema = mongoose.Schema({
 });
 
 ArtistSchema.statics.findByName = function(name) {
-  console.log("Searching for " + regexEscape(name));
   return this.aggregate([
     { $match: { name: new RegExp(regexEscape(name), "i") } }, // match the search term anywhere in the artist name
     { $unwind: "$releases" }, // split the releases for each artist into individual rows
@@ -26,7 +25,17 @@ ArtistSchema.statics.findByName = function(name) {
         cover: { $concat: [ "http://coverartarchive.org/release-group/", "$releases.rgid", "/front-250" ] } } } } },
     { $sort: { "year": -1 } }, // sort artists by the year of their most recent release
     { $limit: 10 } // limit to 10 artist search results
-  ]).exec();
+  ])
+  .exec()
+  .then(function(artists) {
+    return new Promise(function(resolve) {
+      // Only return a max of 5 releases per artist
+      artists.forEach(function(artist) {
+        artist.releases = artist.releases.slice(0, 5);
+      });
+      resolve(artists);
+    });
+  });
 };
 
 var Artist = mongoose.model("Artist", ArtistSchema);

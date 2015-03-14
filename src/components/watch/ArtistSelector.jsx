@@ -59,16 +59,16 @@ var ArtistSelector = React.createClass({
   },
 
   render: function() {
-    var artistNodes = [];
+    var errorMessage = "";
+    var artistElements = [];
     // Give the first artist list item the active class
     var className = "artist active";
-    var numArtists = 0;
 
     if (this.props.artists.length > 0) {
-      artistNodes.push(<li className="artist-spacer" key="top-spacer"></li>);
+      artistElements.push(<li className="artist-spacer" key="top-spacer"></li>);
 
       this.props.artists.forEach(function(artist) {
-        artistNodes.push (
+        artistElements.push (
           <li className={className} ref={artist._id} key={artist._id} onMouseEnter={this.handleMouseEnter.bind(this, artist)}>
             <div className="small-9 columns">
               <h4>{artist.name}</h4>
@@ -81,22 +81,24 @@ var ArtistSelector = React.createClass({
 
         // Each artist list item after the first should not have the active class
         className = "artist";
-        numArtists++;
       }.bind(this));
 
-      artistNodes.push(<li className="artist-spacer" key="bottom-spacer"></li>);
+      artistElements.push(<li className="artist-spacer" key="bottom-spacer"></li>); 
+    } else {
+      errorMessage = ( <h6 className="text-center">No results to show</h6> );
     }
 
     return (
       <div className="artist-selector">
         <div className="row">
+          {errorMessage}
           <div className="small-6 columns">
             <ul className="artist-list">
-              {artistNodes}
+              {artistElements}
             </ul>
           </div>
           <div className="small-6 columns">
-            <ReleaseList numArtists={numArtists} releases={this.state.releases}/>
+            <ReleaseList releases={this.state.releases}/>
           </div>
         </div>
       </div>

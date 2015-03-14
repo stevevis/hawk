@@ -169,10 +169,6 @@ span.primary {
 .watch {
   padding-top: 1rem;
 
-  .artist-search {
-    margin-bottom: 1rem;
-  }
-
   @mixin big-input {
     font-size: 3.5rem;
     background: none;
@@ -207,7 +203,7 @@ span.primary {
   }
 
   .artist-selector {
-    margin: 2rem 0;
+    padding: 2rem 0;
   }
 
   .artist-list {

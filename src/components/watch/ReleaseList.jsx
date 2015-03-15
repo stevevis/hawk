@@ -23,7 +23,7 @@ var ReleaseList = React.createClass({
           <div className="row release" key={release.name}>
             <div className="small-4 columns">
               <div className="cover-image">
-                <ImageLoader src={release.cover} />
+                <ImageLoader src={release.cover}/>
               </div>
             </div>
             <div className="small-8 columns">

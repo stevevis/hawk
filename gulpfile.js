@@ -15,6 +15,9 @@ var source = require("vinyl-source-stream");
 var parallelize = require("concurrent-transform");
 var AWSConfig = require("./src/config/aws");
 
+// Increase the default max listeners to avoid warnings when we pipe more than 10 files at once
+require("events").EventEmitter.defaultMaxListeners = 100;
+
 var version = shortId.generate();
 var prod = process.env.NODE_ENV === "production";
 
@@ -120,8 +123,7 @@ function bundle(watch) {
  * Gulp Tasks.
  */
 gulp.task("default", ["clean", "setDev", "vendors", "watch", "dev"]);
-gulp.task("build", ["clean", "setProd", "vendors", "browserify", "scss", "version-images", "version-assets", 
-  "use-versioned-assets"]);
+gulp.task("build", ["clean", "setProd", "vendors", "browserify", "scss", "version-assets", "use-versioned-assets"]);
 
 gulp.task("setDev", function() {
   prod = false;
@@ -210,38 +212,22 @@ gulp.task("images", function() {
 });
 
 /**
- * Add version numbers to our minified images and publish them to cloudfront.
- */ 
-gulp.task("version-images", ["images"], function() {
-  var publisher = plugins.awspublish.create(AWSConfig.S3.bucket);
-  var headers = AWSConfig.S3.headers;
-
-  return gulp.src([dist.img + "/*"])
-    .pipe(plugins.revAll())
-    .pipe(plugins.rename(function(path) {
-      // e.g. ./northern_hawk.df80e03c.jpg -> ./XJVufTnd/images/northern_hawk.df80e03c.jpg
-      path.dirname += "/" + version + "/img";
-    }))
-    .pipe(plugins.awspublish.gzip())
-    .pipe(parallelize(publisher.publish(headers)))
-    .pipe(publisher.cache())
-    .pipe(plugins.awspublish.reporter())
-    .pipe(plugins.revAll.manifest({ fileName: manifestFile }))
-    .pipe(gulp.dest(dist.img));
-});
-
-/**
  * Add version numbers to our compiled assets and publish them to cloudfront.
  */
-gulp.task("version-assets", ["vendors", "browserify", "scss", "version-images"], function() {
+gulp.task("version-assets", ["vendors", "images", "browserify", "scss"], function() {
   var publisher = plugins.awspublish.create(AWSConfig.S3.bucket);
   var headers = AWSConfig.S3.headers;
 
-  return gulp.src([dist.css + "/*.css", dist.js + "/*.js"])
+  return gulp.src([dist.img + "/*", dist.css + "/*.css", dist.js + "/*.js"])
     .pipe(plugins.revAll())
     .pipe(plugins.rename(function(path) {
-      // e.g. ./app.df80e03c.js -> ./XJVufTnd/js/app.df80e03c.js
-      path.dirname += "/" + version + "/" + path.extname.substr(1);
+      if (path.extname.substr(1) === "js" || path.extname.substr(1) === "css") {
+        // e.g. ./app.df80e03c.js -> ./XJVufTnd/js/app.df80e03c.js
+        path.dirname += "/" + version + "/" + path.extname.substr(1);
+      } else {
+        // e.g. ./northern_hawk.df80e03c.jpg -> ./XJVufTnd/images/northern_hawk.df80e03c.jpg
+        path.dirname += "/" + version + "/img";
+      }
     }))
     .pipe(plugins.awspublish.gzip())
     .pipe(parallelize(publisher.publish(headers)))
@@ -254,10 +240,8 @@ gulp.task("version-assets", ["vendors", "browserify", "scss", "version-images"],
 /**
  * Replace paths to local assets with paths to versioned assets in cloudfront.
  */
-gulp.task("use-versioned-assets", ["version-images", "version-assets"], function() {
-  var imageManifest = JSON.parse(fs.readFileSync(path.join(dist.img, manifestFile), "utf8"));
-  var assetManifest = JSON.parse(fs.readFileSync(path.join(dist.root, manifestFile), "utf8"));
-  var manifest = _.assign(imageManifest, assetManifest);
+gulp.task("use-versioned-assets", ["version-assets"], function() {
+  var manifest = JSON.parse(fs.readFileSync(path.join(dist.root, manifestFile), "utf8"));
 
   var viewStream = gulp.src([src.views]);
   _.forOwn(manifest, function(value, key) {

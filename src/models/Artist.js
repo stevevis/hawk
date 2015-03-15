@@ -38,6 +38,25 @@ ArtistSchema.statics.findByName = function(name) {
   });
 };
 
+ArtistSchema.statics.getArtistFeedById = function(id) {
+  return this.aggregate([
+    { $match: { _id: id } },
+    { $unwind: "$releases" }, // split the releases array into individual rows
+    { $sort: { "releases.year": -1, "releases.month": -1, "releases.day": -1 } }, // sort by release date
+    { $project: {
+      _id: 0,
+      "artist_id": "$_id",
+      "artist_name": "$name",
+      "release_id": "$releases._id",
+      "release_name": "$releases.name",
+      "release_gid": "$releases.rgid",
+      "year": "$releases.year",
+      "month": "$releases.month",
+      "day": "$releases.day"
+    }}
+  ]).exec();
+};
+
 var Artist = mongoose.model("Artist", ArtistSchema);
 
 module.exports = Artist;

@@ -8,12 +8,14 @@ var co = require("co");
 var bcrypt = require("co-bcrypt");
 var mongoose = require("mongoose");
 var validator = require("validator");
+var ObjectId = require("mongoose").Types.ObjectId;
 var logger = require("../config/logger");
 
 var UserSchema = mongoose.Schema({
   name: { type: String, require: true },
   email: { type: String, require: true, unique: true, index: true, validate: [validator.isEmail, "Invalid email address"] },
-  password: { type: String, require: true }
+  password: { type: String, require: true },
+  feed: { type: [] }
 });
 
 UserSchema.set("toJSON", {
@@ -64,6 +66,36 @@ UserSchema.statics.matchUser = function *(email, password) {
   // Throw an error if the passwords don't match
   logger.warn("Password did not match for user %s", email);
   return false;
+};
+
+UserSchema.statics.getUserFeedById = function(id, page, limit) {
+  var skip = (page - 1) * limit;
+  return this.aggregate([
+    { $match: { _id: new ObjectId(id) } },
+    { $unwind: "$feed" },
+    { $sort: { "feed.year": -1, "feed.month": -1, "feed.day": -1 } }, // sort by release date
+    { $skip: skip },
+    { $limit: limit },
+    { $project: {
+      _id: 0,
+      "artist_id": "$feed.artist_id",
+      "artist_name": "$feed.artist_name",
+      "release_id": "$feed.release_id",
+      "release_name": "$feed.release_name",
+      "cover:": { $concat: [ "http://coverartarchive.org/release-group/", "$feed.release_gid", "/front-250" ] },
+      "year": "$feed.year",
+      "month": "$feed.month",
+      "day": "$feed.day"
+    }}
+  ]).exec();
+};
+
+UserSchema.statics.getWatchedArtistsByUserId = function(id) {
+  return this.aggregate([
+    { $match: { _id: new ObjectId(id) } },
+    { $unwind: "$feed" },
+    { $group: { "_id": "$feed.artist_id" } }
+  ]).exec();
 };
 
 var User = mongoose.model("User", UserSchema);

@@ -34,7 +34,7 @@ var serializeUser = function(user, done) {
 };
 
 var deserializeUser = function(id, done) {
-  User.findById(id, done);
+  User.findById(id, "-feed", done);
 };
 
 exports.init = function(app) {

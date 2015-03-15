@@ -2,7 +2,6 @@
 
 var React = require("react");
 var ReleaseList = require("./ReleaseList.jsx");
-var UserStore = require("../../stores/UserStore");
 var UserActions = require("../../actions/UserActions");
 
 var ArtistSelector = React.createClass({
@@ -52,10 +51,18 @@ var ArtistSelector = React.createClass({
 
   handleClickWatch: function(artist, e) {
     e.preventDefault();
-    var user = UserStore.getUser();
-    UserActions.watchArtist(user._id, artist._id);
-    $(this.refs["watch-" + artist._id].getDOMNode()).addClass("watching");
-    $(this.refs["watch-" + artist._id].getDOMNode()).html("Watching");
+    var button = $(this.refs["watch-" + artist._id].getDOMNode());
+    var watching = button.hasClass("watching");
+
+    if (watching) {
+      UserActions.unwatchArtist(artist._id);
+      button.html("Watch");
+      button.removeClass("watching");
+    } else {
+      UserActions.watchArtist(artist._id);
+      button.html("Un-watch");
+      button.addClass("watching");
+    }
   },
 
   render: function() {
@@ -68,13 +75,22 @@ var ArtistSelector = React.createClass({
       artistElements.push(<li className="artist-spacer" key="top-spacer"></li>);
 
       this.props.artists.forEach(function(artist) {
+        var buttonText = "Watch";
+        var buttonClasses = "button tiny radius ghost";
+        if (artist.watching) {
+          buttonText = "Un-watch";
+          buttonClasses += " watching";
+        }
+
         artistElements.push (
           <li className={className} ref={artist._id} key={artist._id} onMouseEnter={this.handleMouseEnter.bind(this, artist)}>
             <div className="small-9 columns">
               <h4>{artist.name}</h4>
             </div>
             <div className="small-3 columns">
-              <a href="#" className="button tiny radius ghost" ref={"watch-" + artist._id} onClick={this.handleClickWatch.bind(this, artist)}>Watch</a>
+              <a href="#" className={buttonClasses} ref={"watch-" + artist._id} onClick={this.handleClickWatch.bind(this, artist)}>
+                {buttonText}
+              </a>
             </div>
           </li>
         );

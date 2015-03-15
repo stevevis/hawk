@@ -6,11 +6,7 @@ var ActionSource = require("../constants/ActionSource.js");
 
 var AppDispatcher = assign(new Dispatcher(), {
 
-  // TODO Handle server actions?
-
   handleViewAction: function(action) {
-    console.log("Handling view action " + action);
-
     if (!action.type) {
       throw new Error("Empty action.type: you likely mistyped the action.");
     }
@@ -20,6 +16,9 @@ var AppDispatcher = assign(new Dispatcher(), {
       action: action
     });
   }
+
+  // TODO Handle server actions like error and success
+  
 });
 
 module.exports = AppDispatcher;

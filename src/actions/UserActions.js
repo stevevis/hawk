@@ -28,8 +28,8 @@ var UserActions = {
 
     var user = UserStore.getUser();
     request.put("/api/user/" + user._id + "/feed/" + artistId)
-      .end(function(response) {
-        if (!response.ok) {
+      .end(function(err, response) {
+        if (err || !response.ok) {
           // Fire a server action to handle the error
           console.log("Server error trying to watch artist");
         }
@@ -44,8 +44,8 @@ var UserActions = {
 
     var user = UserStore.getUser();
     request.del("/api/user/" + user._id + "/feed/" + artistId)
-      .end(function(response) {
-        if (!response.ok) {
+      .end(function(err, response) {
+        if (err || !response.ok) {
           // Fire a server action to handle the error
           console.log("Server error trying to un-watch artist");
         }

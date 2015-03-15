@@ -11,7 +11,7 @@ var ReleaseList = React.createClass({
     if (this.props.releases.length > 0) {
       var top = $(".artist-list").offset().top;
       // Each release is about 142px high (including margins)
-      maxReleases = Math.floor((window.innerHeight - top) / 142);
+      maxReleases = Math.floor((window.innerHeight - top) / 148);
 
       this.props.releases.forEach(function(release) {
         // This makes sure the release list always fits niceley on the screen
@@ -43,11 +43,11 @@ var ReleaseList = React.createClass({
   },
 
   componentDidMount: function() {
-    $(".release-list").sticky({topSpacing:60, bottomSpacing: 30, getWidthFrom: ".artist-list"});
+    $(".release-list").sticky({topSpacing:85, bottomSpacing: 30, getWidthFrom: ".release-wrapper"});
   },
 
   componentDidUpdate: function() {
-    $(".release-list").css("top", "60px");
+    $(".release-list").css("top", "85px");
   }
 });
 

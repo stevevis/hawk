@@ -30,6 +30,6 @@ exports.init = function(app) {
     }
 
     var content = React.renderToString(React.createElement(this.state.reactComponent, this.state.props));
-    yield this.render(this.state.view, { html: content, props: JSON.stringify(this.state.props) });
+    yield this.render(this.state.view, { html: content, _props: JSON.stringify(this.state.props) });
   });
 };

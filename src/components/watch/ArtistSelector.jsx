@@ -84,10 +84,10 @@ var ArtistSelector = React.createClass({
 
         artistElements.push (
           <li className={className} ref={artist._id} key={artist._id} onMouseEnter={this.handleMouseEnter.bind(this, artist)}>
-            <div className="small-9 columns">
+            <div className="small-8 large-9 columns">
               <h4>{artist.name}</h4>
             </div>
-            <div className="small-3 columns">
+            <div className="small-4 large-3 columns">
               <a href="#" className={buttonClasses} ref={"watch-" + artist._id} onClick={this.handleClickWatch.bind(this, artist)}>
                 {buttonText}
               </a>
@@ -113,7 +113,7 @@ var ArtistSelector = React.createClass({
               {artistElements}
             </ul>
           </div>
-          <div className="small-6 columns">
+          <div className="small-6 columns release-wrapper">
             <ReleaseList releases={this.state.releases}/>
           </div>
         </div>

@@ -50,7 +50,7 @@ var Watch = React.createClass({
     }
   },
 
-  renderArtists: function(response) {
+  renderArtists: function(err, response) {
     this.stopSearchingAnimation(true);
     if (response.ok) {
       this.setState({ artists: response.body });

@@ -175,6 +175,10 @@ span.primary {
 .feed {
   padding: 1rem 0;
 
+  .feed-error {
+    margin-top: 1rem;
+  }
+
   ul {
     margin: 0;
   }
@@ -199,7 +203,7 @@ span.primary {
   padding-top: 1rem;
 
   @mixin big-input {
-    font-size: 3.5rem;
+    font-size: 2rem;
     background: none;
     border: none;
     border-bottom: 1px solid $gainsboro;
@@ -207,6 +211,10 @@ span.primary {
 
     @include input-placeholder {
       color: $placeholder-color;
+    }
+
+    @media #{$medium-up} {
+      font-size: 3.5rem;
     }
   }
 

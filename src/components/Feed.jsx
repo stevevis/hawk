@@ -23,10 +23,20 @@ var Feed = React.createClass({
     FeedStore.addChangeListener(this.onFeedChange);
   },
 
+  componentWillUnmount: function() {
+    FeedStore.removeChangeListener(this.onFeedChange);
+  },
+
   render: function() {
+    var errorMessage;
+    if (this.state.feed.length < 1) {
+      errorMessage = ( <h6 className="feed-error text-center">You're not watching any artists!</h6> );
+    }
+
     return (
       <div className="feed">
         <div className="row">
+          {errorMessage}
           <div className="small-12 medium-10 large-9 medium-centered columns">
             <ul>
               {this.state.feed.map(function(item) {

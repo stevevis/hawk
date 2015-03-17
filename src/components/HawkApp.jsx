@@ -6,11 +6,17 @@ var RouteHandler = require("react-router").RouteHandler;
 // Components
 var TopBar = require("./nav/TopBar.jsx");
 
+// Actions
+var UserActions = require("../actions/UserActions");
+
 var HawkApp = React.createClass({
 
   componentDidMount: function() {
     // Initialize Foundation
     $(document).foundation();
+
+    // Initialize the user store
+    UserActions.getUserSuccess(this.props.user);
   },
 
   render: function() {

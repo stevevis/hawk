@@ -80,22 +80,22 @@ var routes = {
         name: "artist",
         path: "artist",
         methods: ["GET"],
-        controller: "ArtistController",
-        secure: true
+        controller: "API/ArtistController",
+        secure: false
       },
       {
         name: "watch",
         path: "user/:userId/feed/:artistId",
         methods: ["PUT", "DEL"],
-        controller: "FeedController",
-        secure: true
+        controller: "API/FeedController",
+        secure: false
       },
       {
         mame: "feed",
         path: "user/:userId/feed",
         methods: ["GET"],
-        controller: "FeedController",
-        secure: true
+        controller: "API/FeedController",
+        secure: false
       }
     ]
   }

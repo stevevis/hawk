@@ -1,5 +1,6 @@
 "use strict";
 
+var _ = require("lodash");
 var assign = require("object-assign");
 var Dispatcher = require("flux").Dispatcher;
 var ActionSource = require("../constants/ActionSource.js");
@@ -11,13 +12,20 @@ var AppDispatcher = assign(new Dispatcher(), {
       throw new Error("Empty action.type: you likely mistyped the action.");
     }
 
-    this.dispatch({
+    this.dispatch(_.assign({
       source: ActionSource.VIEW_ACTION,
-      action: action
-    });
-  }
+    }, action));
+  },
 
-  // TODO Handle server actions like error and success
+  handleServerAction: function(action) {
+    if (!action.type) {
+      throw new Error("Empty action.type: you likely mistyped the action.");
+    }
+
+    this.dispatch(_.assign({
+      source: ActionSource.SERVER_ACTION,
+    }, action));
+  }
   
 });
 

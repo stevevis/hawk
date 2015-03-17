@@ -1,7 +1,7 @@
 "use strict";
 
-var Artist = require("../models/Artist");
-var User = require("../models/User");
+var Artist = require("../../models/Artist");
+var User = require("../../models/User");
 
 /**
  * Artist search API
@@ -26,7 +26,7 @@ exports.get = function *() {
   var watching = [];
 
   // If a user is logged, get the list of artists that user is watching
-  if (this.isAuthenticated) {
+  if (this.isAuthenticated()) {
     var userId = this.passport.user._id;
     var watchingPromise = User.getWatchedArtistsByUserId(userId);
     watching = yield watchingPromise;

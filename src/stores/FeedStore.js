@@ -8,25 +8,32 @@ var ActionType = require("../constants/ActionType");
 var CHANGE_EVENT = "change";
 
 var _initialized = false;
-var _user = null;
+var _feed = [];
 
 function initialize() {
   _initialized = true;
 }
 
-function updateUser(user) {
+function updateFeed(feed, page) {
   initialize();
-  _user = user;
+
+  if (page === 1) {
+    _feed = feed;
+  } else {
+    feed.forEach(function(item) {
+      _feed.push(item);
+    });
+  }
 }
 
-var UserStore = assign({}, EventEmitter.prototype, {
+var FeedStore = assign({}, EventEmitter.prototype, {
 
   isInitialized: function() {
     return _initialized;
   },
 
-  getUser: function() {
-    return _user;
+  getFeed: function() {
+    return _feed;
   },
 
   emitChange: function() {
@@ -43,11 +50,13 @@ var UserStore = assign({}, EventEmitter.prototype, {
 });
 
 AppDispatcher.register(function(action) {
-
+  
   switch(action.type) {
-    case ActionType.GET_USER_SUCCESS:
-      updateUser(action.user);
-      UserStore.emitChange();
+    case ActionType.GET_FEED_SUCCESS:
+      updateFeed(action.feed, action.page);
+      if (action.page > 1) {
+        FeedStore.emitChange();
+      }
       break;
 
     default: 
@@ -55,4 +64,4 @@ AppDispatcher.register(function(action) {
   }
 });
 
-module.exports = UserStore;
+module.exports = FeedStore;

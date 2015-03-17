@@ -63,10 +63,10 @@ exports.init = function(app) {
     passwordField: "password"
   }, AuthLocalUser));
 
-  // If the request is authenticated, add the user object to context.state.props
+  // If the request is authenticated, add the user object to context.state.data
   app.use(function *(next) {
     if (this.isAuthenticated()) {
-      this.state.props.user = this.passport.user.toJSON();
+      this.state.data.user = this.passport.user.toJSON();
       logger.debug("Current user is", this.passport.user.toJSON());
     }
     yield next;

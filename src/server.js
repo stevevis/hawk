@@ -42,23 +42,23 @@ app.use(responseTime());
 app.use(errorHandler());
 app.use(koaBody());
 
-// Initialize the props object, this object will be written to the DOM by the view renderer so that the React 
+// Initialize the data object, this object will be written to the DOM by the view renderer so that the React 
 // components on the client can use the contents of it to initialize state without AJAX requests.
 app.use(function *(next) {
-  this.state.props = {};
+  this.state.data = {};
   yield next;
 });
 
 // Setup authentication middleware that will authenticate the user and set the session cookie.
 authentication.init(app);
 
-// If there are any errors saved in session, copy them to props to be rendered, then delete them from session.
+// If there are any errors saved in session, copy them to data to be rendered, then delete them from session.
 app.use(function *(next) {
   if (this.session.errors) {
-    this.state.props.errors = this.session.errors;
+    this.state.data.errors = this.session.errors;
     this.session.errors = false;
   } else {
-    this.state.props.errors = {};
+    this.state.data.errors = {};
   }
   yield next;
 });
@@ -67,7 +67,7 @@ app.use(function *(next) {
 // to be executed.
 router.init(app);
 
-// Initalize the renderer middleware that will render the React component and the properties into the view.
+// Initalize the renderer middleware that will render the React component and the data into the view.
 render.init(app);
 
 // Start the server if this script wasn"t required by another script e.g. a function test script

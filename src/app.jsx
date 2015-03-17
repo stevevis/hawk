@@ -6,13 +6,10 @@ var Router = require("react-router");
 // Load the client routes
 var routes = require("./config/routes/client");
 
-// Initialize Foundation
-$(document).foundation();
-
 // Parse the properties sent by the server
-var props = JSON.parse(document.getElementById("props").innerHTML);
+var data = JSON.parse(document.getElementById("data").innerHTML);
 
 // Initialize the React router
 Router.run(routes.react, Router.HistoryLocation, function(Handler) {
-  React.render(React.createElement(Handler, props), document.getElementById("hawk"));
+  React.render(React.createElement(Handler, data), document.getElementById("hawk"));
 });

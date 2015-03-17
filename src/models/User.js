@@ -78,11 +78,11 @@ UserSchema.statics.getUserFeedById = function(id, page, limit) {
     { $limit: limit },
     { $project: {
       _id: 0,
-      "artist_id": "$feed.artist_id",
-      "artist_name": "$feed.artist_name",
-      "release_id": "$feed.release_id",
-      "release_name": "$feed.release_name",
-      "cover:": { $concat: [ "http://coverartarchive.org/release-group/", "$feed.release_gid", "/front-250" ] },
+      "aid": "$feed.aid",
+      "aname": "$feed.aname",
+      "rid": "$feed.rid",
+      "rname": "$feed.rname",
+      "cover": { $concat: [ "http://coverartarchive.org/release-group/", "$feed.rgid", "/front-250" ] },
       "year": "$feed.year",
       "month": "$feed.month",
       "day": "$feed.day"
@@ -94,7 +94,7 @@ UserSchema.statics.getWatchedArtistsByUserId = function(id) {
   return this.aggregate([
     { $match: { _id: new ObjectId(id) } },
     { $unwind: "$feed" },
-    { $group: { "_id": "$feed.artist_id" } }
+    { $group: { "_id": "$feed.aid" } }
   ]).exec();
 };
 

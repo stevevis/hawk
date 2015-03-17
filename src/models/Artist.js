@@ -45,11 +45,11 @@ ArtistSchema.statics.getArtistFeedById = function(id) {
     { $sort: { "releases.year": -1, "releases.month": -1, "releases.day": -1 } }, // sort by release date
     { $project: {
       _id: 0,
-      "artist_id": "$_id",
-      "artist_name": "$name",
-      "release_id": "$releases._id",
-      "release_name": "$releases.name",
-      "release_gid": "$releases.rgid",
+      "aid": "$_id",
+      "aname": "$name",
+      "rid": "$releases._id",
+      "rname": "$releases.name",
+      "rgid": "$releases.rgid",
       "year": "$releases.year",
       "month": "$releases.month",
       "day": "$releases.day"

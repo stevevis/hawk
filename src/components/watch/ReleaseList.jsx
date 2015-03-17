@@ -1,7 +1,7 @@
 "use strict";
 
 var React = require("react");
-var ImageLoader = require("react-imageloader");
+var CoverImage = require("../shared/CoverImage.jsx");
 
 var ReleaseList = React.createClass({
   render: function() {
@@ -11,7 +11,7 @@ var ReleaseList = React.createClass({
     if (this.props.releases.length > 0) {
       var top = $(".artist-list").offset().top;
       // Each release is about 142px high (including margins)
-      maxReleases = Math.floor((window.innerHeight - top) / 148);
+      maxReleases = Math.floor((window.innerHeight - top) / 142);
 
       this.props.releases.forEach(function(release) {
         // This makes sure the release list always fits niceley on the screen
@@ -22,9 +22,7 @@ var ReleaseList = React.createClass({
         releaseNodes.push (
           <div className="row release" key={release.name}>
             <div className="small-4 columns">
-              <div className="cover-image">
-                <ImageLoader src={release.cover}/>
-              </div>
+              <CoverImage src={release.cover}/>
             </div>
             <div className="small-8 columns">
               <h5>{release.name}</h5>

@@ -87,10 +87,6 @@
   height: 100%;
 }
 
-@mixin content {
-
-}
-
 .footer {
   position: absolute;
   bottom: 0;
@@ -105,6 +101,7 @@
 
 span.primary {
   color: $primary-color-dark;
+  font-weight: $font-weight-bold;
 }
 
 .cover-image {
@@ -150,14 +147,19 @@ span.primary {
     }
   }
 
+  input:focus {
+    @include input-placeholder {
+      color: scale-color($primary-color-dark, $lightness: -10%);
+    }
+  }
+
   .welcome {
     margin-bottom: $topbar-height;
   }
 }
 
 @mixin ghost-block {
-  background-color: rgba($ghost, 0.7);
-  @include radius;
+  background-color: rgba($ghost, 0.9);
   padding: 1rem;
   margin-bottom: 1rem;
 }
@@ -171,6 +173,12 @@ span.primary {
 }
 
 /***** Release Feed Page *****/
+
+@mixin single-line {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 .feed {
   padding: 1rem 0;
@@ -187,12 +195,29 @@ span.primary {
     margin: 1rem 0;
   }
 
+  // Release title
   h4 {
     color: $primary-color-dark;
+    @include single-line;
   }
 
+  // Artist name
+  h5 {
+    @include single-line;
+  }
+
+  // Release date
   h6 {
     color: $charcoal;
+    @include single-line;
+  }
+
+  .inline-list > li:first-child {
+    margin-left: 0;
+  }
+
+  .inline-list > li > a {
+    color: $pinkrose-dark;
   }
 }
 
@@ -248,7 +273,7 @@ span.primary {
   }
 
   .artist {
-    height: 68px;
+    height: 70px;
     position: relative;
     background: none;
     list-style: none;

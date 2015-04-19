@@ -4,19 +4,16 @@ var request = require("superagent");
 var AppDispatcher = require("../dispatcher/AppDispatcher");
 var ActionType = require("../constants/ActionType");
 var UserStore = require("../stores/UserStore");
-
-var DEFAULT_FEED_LIMIT = 20;
+var FeedStore = require("../stores/FeedStore");
 
 function requestFeed(page, limit, success, failure) {
-  var _page = page || 1,
-      _limit = limit || DEFAULT_FEED_LIMIT,
-      user = UserStore.getUser();
+  var user = UserStore.getUser();
 
   request.get("/api/user/" + user._id + "/feed")
-    .query({ page: _page, limit: _limit })
+    .query({ page: page, limit: limit })
     .end(function(err, response) {
       if (response && response.ok) {
-        success(_page, response.body);
+        success(page, response.body);
       } else {
         failure(err);
       }
@@ -35,7 +32,8 @@ var FeedActions = {
   },
 
   reloadFeed: function() {
-    requestFeed(1, DEFAULT_FEED_LIMIT, this.getFeedSuccess, this.getFeedFailure);
+    var limit = FeedStore.getPageSize();
+    requestFeed(1, limit, this.getFeedSuccess, this.getFeedFailure);
   },
 
   getFeedSuccess: function(page, feed) {

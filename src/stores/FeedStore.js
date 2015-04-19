@@ -6,9 +6,12 @@ var AppDispatcher = require("../dispatcher/AppDispatcher");
 var ActionType = require("../constants/ActionType");
 
 var CHANGE_EVENT = "change";
+var PAGE_SIZE = 20;
 
 var _initialized = false;
 var _feed = [];
+var _releaseIds = {}; // A map of release IDs currently in the feed, to prevent duplicates.
+var _complete = false; // True if there are no more releases to load from the server.
 
 function initialize() {
   _initialized = true;
@@ -18,12 +21,21 @@ function updateFeed(feed, page) {
   initialize();
 
   if (page === 1) {
-    _feed = feed;
-  } else {
-    feed.forEach(function(item) {
-      _feed.push(item);
-    });
+    _feed = [];
+    _releaseIds = {};
+    _complete = false;
   }
+
+  if (feed.length < PAGE_SIZE) {
+    _complete = true;
+  }
+
+  feed.forEach(function(item) {
+    if (!_releaseIds[item.rid]) {
+      _feed.push(item);
+      _releaseIds[item.rid] = true;
+    }
+  });
 }
 
 var FeedStore = assign({}, EventEmitter.prototype, {
@@ -34,6 +46,18 @@ var FeedStore = assign({}, EventEmitter.prototype, {
 
   getFeed: function() {
     return _feed;
+  },
+
+  getPageSize: function() {
+    return PAGE_SIZE;
+  },
+
+  getNextPageNumber: function() {
+    if (_complete) {
+      return 0;
+    } else {
+      return Math.ceil(_feed.length / PAGE_SIZE) + 1;
+    }
   },
 
   emitChange: function() {
@@ -54,9 +78,7 @@ AppDispatcher.register(function(action) {
   switch(action.type) {
     case ActionType.GET_FEED_SUCCESS:
       updateFeed(action.feed, action.page);
-      if (action.page > 1) {
-        FeedStore.emitChange();
-      }
+      FeedStore.emitChange();
       break;
 
     default: 

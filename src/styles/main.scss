@@ -296,28 +296,28 @@ span.primary {
 
   .artist.active:after,
   .artist.active:before {
-      left: 100%;
-      top: 50%;
-      border: solid transparent;
-      content: " ";
-      height: 0;
-      width: 0;
-      position: absolute;
-      pointer-events: none;
+    left: 100%;
+    top: 50%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
   }
 
   .artist.active:after {
-      border-color: rgba(245, 245, 245, 0);
-      border-left-color: #F5F5F5;
-      border-width: 34px;
-      margin-top: -34px;
+    border-color: rgba(245, 245, 245, 0);
+    border-left-color: #F5F5F5;
+    border-width: 34px;
+    margin-top: -34px;
   }
 
   .artist.active:before {
-      border-color: rgba(221, 221, 221, 0);
-      border-left-color: $gainsboro;
-      border-width: 35px;
-      margin-top: -35px;
+    border-color: rgba(221, 221, 221, 0);
+    border-left-color: $gainsboro;
+    border-width: 35px;
+    margin-top: -35px;
   }
 
   .artist h4 {
@@ -385,5 +385,3 @@ span.primary {
     }
   }
 }
-
-

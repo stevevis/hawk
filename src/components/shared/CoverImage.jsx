@@ -4,7 +4,7 @@ var React = require("react");
 var ImageLoader = require("react-imageloader");
 
 var CoverImage = React.createClass({
-  preload: function() {
+  placeholder: function() {
     return (
       <div className="cover-image"/>
     );
@@ -12,7 +12,9 @@ var CoverImage = React.createClass({
 
   render: function() {
     return (
-      <ImageLoader src={this.props.src} preloader={this.preload}/>
+      <ImageLoader src={this.props.src} preloader={this.placeholder}>
+        <div className="cover-image"/>
+      </ImageLoader>
     );
   }
 });

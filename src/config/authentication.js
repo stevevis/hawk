@@ -6,13 +6,10 @@
 
 var co = require("co");
 var session = require("koa-generic-session");
-var MongoStore = require("koa-generic-session-mongo");
+var mongooseStore = require("koa-session-mongoose");
 var passport = require("koa-passport");
 var LocalStrategy = require("passport-local").Strategy;
 var logger = require("../config/logger");
-
-// Config
-var mongoConfig = require("../config/mongo");
 
 // Models
 var User = require("../models/User");
@@ -38,17 +35,10 @@ var deserializeUser = function(id, done) {
 };
 
 exports.init = function(app) {
-  // Setup the session store
-  var sessionStore = new MongoStore({ 
-    url: mongoConfig.uri,
-    user: mongoConfig.options.user,
-    password: mongoConfig.options.password
-  });
-
   // Initialize the session middleware
   app.use(session({
     key: process.env.HAWK_APP_KEY,
-    store: sessionStore
+    store: mongooseStore.create()
   }));
 
   // Initialize passport

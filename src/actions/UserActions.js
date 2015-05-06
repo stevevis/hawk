@@ -22,7 +22,7 @@ var UserActions = {
 
     var user = UserStore.getUser();
 
-    request.put("/api/user/" + user._id + "/feed/" + artistId)
+    request.put("/api/user/" + user._id + "/watching/" + artistId)
       .end(function(err, response) {
         if (response && response.ok) {
           UserActions.watchArtistSuccess(artistId);
@@ -56,7 +56,7 @@ var UserActions = {
 
     var user = UserStore.getUser();
 
-    request.del("/api/user/" + user._id + "/feed/" + artistId)
+    request.del("/api/user/" + user._id + "/watching/" + artistId)
       .end(function(err, response) {
         if (response && response.ok) {
           UserActions.unwatchArtistSuccess(artistId);

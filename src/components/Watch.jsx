@@ -39,13 +39,18 @@ var Watch = React.createClass({
       clearTimeout(this.getArtistTimeout);
     }
 
-    var name = this.refs.artistInput.getDOMNode().value.trim();
+    var name = this.refs.searchInput.getDOMNode().value.trim();
+
     if (name.length >= 3) {
       this.getArtistTimeout = setTimeout(function() {
         this.startSearchingAnimation();
-        request.get("/api/artist")
+        request.get("/api/artist/search")
           .query({ name: name })
           .end(this.renderArtists);
+      }.bind(this), 500);
+    } else {
+      this.getArtistTimeout = setTimeout(function() {
+        this.clearArtists();
       }.bind(this), 500);
     }
   },
@@ -57,6 +62,10 @@ var Watch = React.createClass({
     }
   },
 
+  clearArtists: function() {
+    this.setState({ artists: [] });
+  },
+
   render: function() {
     return (
       <div className="watch">
@@ -64,7 +73,7 @@ var Watch = React.createClass({
           <form>
             <div className="small-12 large-10 large-centered columns">
               <input type="text" className="input-artist" placeholder="Who's your favorite artist?" autoFocus="true" 
-                  ref="artistInput" onChange={this.handleChange}/>
+                  ref="searchInput" onChange={this.handleChange}/>
               <svg className="loading-svg" height="1" width="100%">
                 <line className="loading-svg-line" x1="0" y1="0" x2="0" y2="0"/>
               </svg>

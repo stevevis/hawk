@@ -105,9 +105,10 @@ span.primary {
 }
 
 .cover-image {
-  width: 100%;
   height: 0;
-  padding-bottom: 100%;
+  width: 100%;
+  // The padding-bottom makes the div stretch to be as high as it is wide, use 98% to account for 1px border
+  padding-bottom: 98%;
   border: 1px solid $gainsboro;
   background-color: $white-smoke;
   background-image: url(../img/cd.png);
@@ -122,7 +123,7 @@ span.primary {
   min-height: 100%;
   position: relative;
   padding: $topbar-height 0;
-  // http://sixrevisions.com/css/responsive-background-image/
+  // Thanks - http://sixrevisions.com/css/responsive-background-image/
   background-image: url(../img/northern_hawk_finland-wide.jpg), url(../img/northern_hawk_finland-small.jpg);
   background-position: center center;
   background-repeat: no-repeat;

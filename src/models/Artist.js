@@ -3,6 +3,7 @@
 var mongoose = require("mongoose");
 var Release = require("./Release");
 
+// Thanks - http://stackoverflow.com/questions/3561493/is-there-a-regexp-escape-function-in-javascript/3561711
 function regexEscape(s) {
     return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
 }

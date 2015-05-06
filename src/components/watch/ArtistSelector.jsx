@@ -107,7 +107,6 @@ var ArtistSelector = React.createClass({
     return (
       <div className="artist-selector">
         <div className="row">
-          {errorMessage}
           <div className="small-6 columns">
             <ul className="artist-list">
               {artistElements}
@@ -117,6 +116,7 @@ var ArtistSelector = React.createClass({
             <ReleaseList releases={this.state.releases}/>
           </div>
         </div>
+        {errorMessage}
       </div>
     );
   },

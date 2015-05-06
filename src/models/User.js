@@ -15,7 +15,8 @@ var UserSchema = mongoose.Schema({
   name: { type: String, require: true },
   email: { type: String, require: true, unique: true, index: true, validate: [validator.isEmail, "Invalid email address"] },
   password: { type: String, require: true },
-  feed: { type: [] }
+  watching: { type: [] },
+  feed: { type: [], select: false }
 });
 
 UserSchema.set("toJSON", {
@@ -35,7 +36,8 @@ UserSchema.pre("save", function(next) {
     var salt = yield bcrypt.genSalt(10);
     var hash = yield bcrypt.hash(this.password, salt);
     this.password = hash;
-  }).call(this)
+  })
+  .call(this)
   .then(function() {
     next();
   })
@@ -87,14 +89,6 @@ UserSchema.statics.getUserFeedById = function(id, page, limit) {
       "month": "$feed.month",
       "day": "$feed.day"
     }}
-  ]).exec();
-};
-
-UserSchema.statics.getWatchedArtistsByUserId = function(id) {
-  return this.aggregate([
-    { $match: { _id: new ObjectId(id) } },
-    { $unwind: "$feed" },
-    { $group: { "_id": "$feed.aid" } }
   ]).exec();
 };
 

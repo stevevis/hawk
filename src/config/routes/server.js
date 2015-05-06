@@ -2,8 +2,8 @@
 
 var _ = require("lodash");
 var path = require("path");
-var router = require("koa-router");
-var Router = require("react-router");
+var koaRouter = require("koa-router");
+var ReactRouter = require("react-router");
 var logger = require("../../config/logger");
 
 // The client routes contains the React routes that we need on the server too
@@ -17,6 +17,9 @@ var toLowerCase = function(string) {
   return string.toLowerCase();
 };
 
+/*
+ * TODO: Something better for API routes, like return 401 Unauthorized...
+ */
 var secure = function *(next) {  
   if (this.isAuthenticated()) {
     yield next;
@@ -49,28 +52,30 @@ function generateKoaRoutes(app, route, parentPath) {
 }
 
 // Initialize the Koa router
-var initKoaRouter = function(app) {
-  app.use(router(app));
+function initKoaRouter(app) {
+  app.use(koaRouter(app));
   generateKoaRoutes(app, routes.app);
   generateKoaRoutes(app, routes.action);
   generateKoaRoutes(app, routes.api);
-};
+}
 
-var initReactRouter = function(app) {
+// Initialize the server side React router
+function initReactRouter(app) {
+  var apiRegex = new RegExp("^" + routes.API_PREFIX);
   app.use(function *(next) {
     // We only render React components for GET requests to non API routes
-    if (this.method !== "GET" || this.path.match(/^api/)) {
+    if (this.method !== "GET" || this.path.match(apiRegex)) {
       return yield next;
     }
 
-    Router.run(routes.react, this.request.path, function(Handler) {
+    ReactRouter.run(routes.react, this.request.path, function(Handler) {
       // Save a reference to the component in state so that the Koa controller render it and pass in any required state
       this.state.reactComponent = Handler;
     }.bind(this));
 
     yield next;
   });
-};
+}
 
 exports.init = function(app) {
   // The react router must come first because it determines which react component needs to be rendered and sets that 

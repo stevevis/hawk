@@ -1,11 +1,10 @@
 "use strict";
 
 var Artist = require("../../models/Artist");
-var User = require("../../models/User");
 
 /**
  * Artist search API
- * GET /api/artist?name=<query>[&userId=<userId>]
+ * GET /api/artist/search?name=<name>
  */
 exports.get = function *() {
   if (!this.request.query.name) {
@@ -22,23 +21,20 @@ exports.get = function *() {
     return;
   }
 
-  var artistsPromise = Artist.findByName(name);
-  var watching = [];
-
   // If a user is logged, get the list of artists that user is watching
+  var watching = [];
   if (this.isAuthenticated()) {
-    var userId = this.passport.user._id;
-    var watchingPromise = User.getWatchedArtistsByUserId(userId);
-    watching = yield watchingPromise;
+    var user = this.passport.user;
+    watching = user.watching;
   }
 
-  var artists = yield artistsPromise;
+  var artists = yield Artist.findByName(name);
 
   // Add a watching property to each artist the user is watching
   if (watching.length > 0) {
     artists.forEach(function(artist) {
-      watching.forEach(function(watch) {
-        if (watch._id === artist._id) {
+      watching.forEach(function(artistId) {
+        if (artistId === artist._id) {
           artist.watching = true;
         }
       });
@@ -47,5 +43,4 @@ exports.get = function *() {
 
   this.body = artists;
   this.status = 200;
-  return;
 };

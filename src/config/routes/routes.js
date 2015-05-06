@@ -5,12 +5,16 @@ var Home = require("../../components/Home.jsx");
 var Feed = require("../../components/Feed.jsx");
 var Watch = require("../../components/Watch.jsx");
 
+var API_PREFIX = "api";
+
 /* 
  * The master routes list - We use the React components directly because browserify won't include them if we load them
  * dynamically, but we can just store the Koa controllers as strings and load them dynamically since they are only used
  * on the server.
  */
 var routes = {
+
+  API_PREFIX: API_PREFIX,
 
   app: {
     name: "hawk",
@@ -67,35 +71,42 @@ var routes = {
         name: "signup",
         path: "signup",
         methods: ["POST"],
-        controller: "UserController",
+        controller: "SignupController",
         secure: false
       }
     ]
   },
 
   api: {
-    path: "/api",
+    path: "/" + API_PREFIX,
     children: [
       {
-        name: "artist",
-        path: "artist",
+        name: "artist_search",
+        path: "artist/search",
         methods: ["GET"],
-        controller: "API/ArtistController",
-        secure: false
+        controller: "API/ArtistSearchController",
+        secure: true
       },
       {
-        name: "watch",
-        path: "user/:userId/feed/:artistId",
+        name: "user_watching",
+        path: "user/:userId/watching/",
+        methods: ["GET"],
+        controller: "API/UserWatchController",
+        secure: true
+      },
+      {
+        name: "user_watch",
+        path: "user/:userId/watching/:artistId",
         methods: ["PUT", "DEL"],
-        controller: "API/FeedController",
-        secure: false
+        controller: "API/UserWatchController",
+        secure: true
       },
       {
-        mame: "feed",
+        mame: "user_feed",
         path: "user/:userId/feed",
         methods: ["GET"],
-        controller: "API/FeedController",
-        secure: false
+        controller: "API/UserFeedController",
+        secure: true
       }
     ]
   }

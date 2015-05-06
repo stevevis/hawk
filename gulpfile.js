@@ -215,25 +215,32 @@ gulp.task("images", function() {
  * Add version numbers to our compiled assets and publish them to cloudfront.
  */
 gulp.task("version-assets", ["vendors", "images", "browserify", "scss"], function() {
-  var publisher = plugins.awspublish.create(AWSConfig.S3.bucket);
+  var publisher = plugins.awspublish.create({
+    params: {
+      Bucket: AWSConfig.S3.bucket.name
+    }
+  });
   var headers = AWSConfig.S3.headers;
+  var revAll = new plugins.revAll({
+    fileNameManifest: manifestFile
+  });
 
   return gulp.src([dist.img + "/*", dist.css + "/*.css", dist.js + "/*.js"])
-    .pipe(plugins.revAll())
+    .pipe(revAll.revision())
     .pipe(plugins.rename(function(path) {
       if (path.extname.substr(1) === "js" || path.extname.substr(1) === "css") {
         // e.g. ./app.df80e03c.js -> ./XJVufTnd/js/app.df80e03c.js
-        path.dirname += "/" + version + "/" + path.extname.substr(1);
+        path.dirname = "./" + version + "/" + path.extname.substr(1);
       } else {
-        // e.g. ./northern_hawk.df80e03c.jpg -> ./XJVufTnd/images/northern_hawk.df80e03c.jpg
-        path.dirname += "/" + version + "/img";
+        // e.g. ./northern_hawk.df80e03c.jpg -> ./XJVufTnd/img/northern_hawk.df80e03c.jpg
+        path.dirname = "./" + version + "/img";
       }
     }))
     .pipe(plugins.awspublish.gzip())
     .pipe(parallelize(publisher.publish(headers)))
     .pipe(publisher.cache())
     .pipe(plugins.awspublish.reporter())
-    .pipe(plugins.revAll.manifest({ fileName: manifestFile }))
+    .pipe(revAll.manifestFile())
     .pipe(gulp.dest(dist.root));
 });
 
@@ -247,9 +254,9 @@ gulp.task("use-versioned-assets", ["version-assets"], function() {
   _.forOwn(manifest, function(value, key) {
     var ext = key.split(".").slice(-1)[0];
     if (ext === "js" || ext === "css") {
-      viewStream.pipe(plugins.replace("/" + ext + "/" + key, AWSConfig.CloudFront.URL + "/" + value));
+      viewStream.pipe(plugins.replace("/" + key, AWSConfig.CloudFront.URL + "/" + version + "/" + value));
     } else {
-      viewStream.pipe(plugins.replace("/img/" + key, AWSConfig.CloudFront.URL + "/" + value));
+      viewStream.pipe(plugins.replace("/" + key, AWSConfig.CloudFront.URL + "/" + version + "/" + value));
     }
   });
   viewStream.pipe(gulp.dest(dist.views));

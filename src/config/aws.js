@@ -21,7 +21,7 @@ var base = {
   },
   S3: {
     bucket: {
-      bucket: "musichawk",
+      name: "musichawk",
       region: "us-west-2"
     },
     headers: {

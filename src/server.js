@@ -10,7 +10,7 @@ var livereload = require("koa-livereload");
 var responseTime = require("koa-response-time");
 var koaBody = require("koa-body");
 var mongoose = require("mongoose");
-require("node-jsx").install({extension: ".jsx"});
+require("node-jsx").install({ extension: ".jsx" });
 
 // Local dependencies
 var logger = require("./config/logger");
@@ -42,7 +42,7 @@ app.use(responseTime());
 app.use(errorHandler());
 app.use(koaBody());
 
-// Initialize the data object, this object will be written to the DOM by the view renderer so that the React 
+// Initialize the data object, this object will be written to the DOM by the view renderer so that the React
 // components on the client can use the contents of it to initialize state without AJAX requests.
 app.use(function *(next) {
   this.state.data = {};

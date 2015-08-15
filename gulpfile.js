@@ -31,7 +31,6 @@ var src = {
   server: "./src/server.js",
   vendor: {
     css: [
-      
     ],
     head: [
       "./bower_components/modernizr/modernizr.js"
@@ -40,7 +39,7 @@ var src = {
       "./bower_components/jquery/dist/jquery.js",
       "./bower_components/sticky/jquery.sticky.js",
       "./bower_components/fastclick/lib/fastclick.js",
-      "./bower_components/foundation/js/foundation.js",
+      "./bower_components/foundation/js/foundation.js"
     ]
   }
 };
@@ -90,7 +89,7 @@ function bundle(watch) {
   var bundler = browserify({
     basedir: __dirname,
     debug: !prod,
-    entries: [src.app],
+    entries: [ src.app ],
     cache: {}, // required by watchify
     packageCache: {}, // required by watchify
     fullPaths: watch // this only needs to be true for watchify
@@ -101,7 +100,7 @@ function bundle(watch) {
   }
 
   bundler.transform(reactify);
-  bundler.transform({global: true}, envify);
+  bundler.transform({ global: true }, envify);
 
   var rebundle = function() {
     var stream = bundler.bundle();
@@ -122,8 +121,8 @@ function bundle(watch) {
 /**
  * Gulp Tasks.
  */
-gulp.task("default", ["clean", "setDev", "vendors", "watch", "dev"]);
-gulp.task("build", ["clean", "setProd", "vendors", "browserify", "scss", "version-assets", "use-versioned-assets"]);
+gulp.task("default", [ "clean", "setDev", "vendors", "watch", "dev" ]);
+gulp.task("build", [ "clean", "setProd", "vendors", "browserify", "scss", "version-assets", "use-versioned-assets" ]);
 
 gulp.task("setDev", function() {
   prod = false;
@@ -137,7 +136,7 @@ gulp.task("setProd", function() {
  * Delete our compiled assets.
  */
 gulp.task("clean", function() {
-  del.sync([dist.root]);
+  del.sync([ dist.root ]);
 });
 
 /**
@@ -169,7 +168,7 @@ gulp.task("scss", function() {
 /**
  * Minify and concatenate our vendor JS and CSS.
  */
-gulp.task("vendors", ["css", "head", "js"]);
+gulp.task("vendors", [ "css", "head", "js" ]);
 
 gulp.task("css", function() {
   return gulp.src(src.vendor.css)
@@ -214,7 +213,7 @@ gulp.task("images", function() {
 /**
  * Add version numbers to our compiled assets and publish them to cloudfront.
  */
-gulp.task("version-assets", ["vendors", "images", "browserify", "scss"], function() {
+gulp.task("version-assets", [ "vendors", "images", "browserify", "scss" ], function() {
   var publisher = plugins.awspublish.create({
     params: {
       Bucket: AWSConfig.S3.bucket.name
@@ -225,15 +224,15 @@ gulp.task("version-assets", ["vendors", "images", "browserify", "scss"], functio
     fileNameManifest: manifestFile
   });
 
-  return gulp.src([dist.img + "/*", dist.css + "/*.css", dist.js + "/*.js"])
+  return gulp.src([ dist.img + "/*", dist.css + "/*.css", dist.js + "/*.js" ])
     .pipe(revAll.revision())
-    .pipe(plugins.rename(function(path) {
-      if (path.extname.substr(1) === "js" || path.extname.substr(1) === "css") {
+    .pipe(plugins.rename(function(assetPath) {
+      if (assetPath.extname.substr(1) === "js" || assetPath.extname.substr(1) === "css") {
         // e.g. ./app.df80e03c.js -> ./XJVufTnd/js/app.df80e03c.js
-        path.dirname = "./" + version + "/" + path.extname.substr(1);
+        assetPath.dirname = "./" + version + "/" + assetPath.extname.substr(1);
       } else {
         // e.g. ./northern_hawk.df80e03c.jpg -> ./XJVufTnd/img/northern_hawk.df80e03c.jpg
-        path.dirname = "./" + version + "/img";
+        assetPath.dirname = "./" + version + "/img";
       }
     }))
     .pipe(plugins.awspublish.gzip())
@@ -247,10 +246,10 @@ gulp.task("version-assets", ["vendors", "images", "browserify", "scss"], functio
 /**
  * Replace paths to local assets with paths to versioned assets in cloudfront.
  */
-gulp.task("use-versioned-assets", ["version-assets"], function() {
+gulp.task("use-versioned-assets", [ "version-assets" ], function() {
   var manifest = JSON.parse(fs.readFileSync(path.join(dist.root, manifestFile), "utf8"));
 
-  var viewStream = gulp.src([src.views]);
+  var viewStream = gulp.src([ src.views ]);
   _.forOwn(manifest, function(value, key) {
     var ext = key.split(".").slice(-1)[0];
     if (ext === "js" || ext === "css") {
@@ -265,15 +264,15 @@ gulp.task("use-versioned-assets", ["version-assets"], function() {
 /**
  * Watch our javascript, styles and images and recompile on update.
  */
-gulp.task("watch", ["browserify-watch", "scss", "views", "images"], function() {
+gulp.task("watch", [ "browserify-watch", "scss", "views", "images" ], function() {
   // Compile and minify our sscs stylesheets
-  gulp.watch(src.scss, ["scss"]);
+  gulp.watch(src.scss, [ "scss" ]);
 
   // Copy our views to the dist folder
-  gulp.watch(src.views, ["views"]);
+  gulp.watch(src.views, [ "views" ]);
 
   // Copy our images to the dist folder
-  gulp.watch(src.images, ["images"]);
+  gulp.watch(src.images, [ "images" ]);
 
   // Create LiveReload server and watch for changes to front-end code
   plugins.livereload.listen();
@@ -286,7 +285,7 @@ gulp.task("watch", ["browserify-watch", "scss", "views", "images"], function() {
 /**
  * Start the server using nodemon and restart when something changes.
  */
-gulp.task("dev", ["vendors", "watch"], function() {
+gulp.task("dev", [ "vendors", "watch" ], function() {
   plugins.nodemon({
     script: src.server,
     ext: "js jsx",

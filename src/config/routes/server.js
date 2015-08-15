@@ -20,7 +20,7 @@ var toLowerCase = function(string) {
 /*
  * TODO: Something better for API routes, like return 401 Unauthorized...
  */
-var secure = function *(next) {  
+var secure = function *(next) {
   if (this.isAuthenticated()) {
     yield next;
   } else {
@@ -29,7 +29,7 @@ var secure = function *(next) {
 };
 
 // Initialize a koa route for each master route
-function generateKoaRoutes(app, route, parentPath) {
+function generateKoaRoutes(router, route, parentPath) {
   var routePath = parentPath ? path.join(parentPath, route.path) : route.path;
 
   if (route.controller) {
@@ -38,25 +38,26 @@ function generateKoaRoutes(app, route, parentPath) {
     _.each(_.map(route.methods, toLowerCase), function(method) {
       if (controller[method]) {
         if (route.secure) {
-          app[method](routePath, secure, controller[method]);
+          router[method](routePath, secure, controller[method]);
         } else {
-          app[method](routePath, controller[method]);
+          router[method](routePath, controller[method]);
         }
       }
     });
   }
 
   _.forEach(route.children, function(childRoute) {
-    generateKoaRoutes(app, childRoute, routePath);
+    generateKoaRoutes(router, childRoute, routePath);
   });
 }
 
 // Initialize the Koa router
 function initKoaRouter(app) {
-  app.use(koaRouter(app));
-  generateKoaRoutes(app, routes.app);
-  generateKoaRoutes(app, routes.action);
-  generateKoaRoutes(app, routes.api);
+  var router = koaRouter();
+  generateKoaRoutes(router, routes.app);
+  generateKoaRoutes(router, routes.action);
+  generateKoaRoutes(router, routes.api);
+  app.use(router.routes());
 }
 
 // Initialize the server side React router
@@ -78,8 +79,8 @@ function initReactRouter(app) {
 }
 
 exports.init = function(app) {
-  // The react router must come first because it determines which react component needs to be rendered and sets that 
-  // component in context.state, then the koa router will determine which controller needs to be called so that it can 
+  // The react router must come first because it determines which react component needs to be rendered and sets that
+  // component in context.state, then the koa router will determine which controller needs to be called so that it can
   // load any data needed to render the react component.
   initReactRouter(app);
   initKoaRouter(app);

@@ -9,9 +9,9 @@
     "update-hawk-db": "./bin/update-hawk-db"
   },
   "scripts": {
-    "build": "npm install && bower install && gulp build",
+    "build": "npm install && bower install && NODE_ENV=production gulp build",
     "pm2": "pm2 startOrReload ecosystem.json --env production",
-    "start": "NODE_ENV=production npm run build && npm run pm2",
+    "start": "npm run build && npm run pm2",
     "stop": "pm2 stop ecosystem.json && pm2 delete ecosystem.json",
     "update": "git pull && npm run build && npm run pm2",
     "deploy": "pm2 deploy production",
@@ -83,7 +83,7 @@
     "gulp-notify": "^2.2.0",
     "gulp-rename": "^1.2.0",
     "gulp-replace": "^0.5.3",
-    "gulp-rev-all": "^0.8.18",
+    "gulp-rev-all": "^0.8.19",
     "gulp-ruby-sass": "^1.0.0-alpha.3",
     "gulp-sourcemaps": "^1.5.2",
     "gulp-streamify": "^1.0.0",

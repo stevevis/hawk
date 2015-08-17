@@ -147,7 +147,8 @@ gulp.task("version-assets", [ "vendors", "images", "browserify", "scss" ], funct
   });
   var headers = AWSConfig.S3.headers;
   var revAll = new plugins.revAll({
-    fileNameManifest: manifestFile
+    fileNameManifest: manifestFile,
+    dontSearchFile: [ out.vendor.js ]
   });
 
   return gulp.src([ dist.img + "/*", dist.css + "/*.css", dist.js + "/*.js" ])

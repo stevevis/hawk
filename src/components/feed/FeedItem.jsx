@@ -8,7 +8,7 @@ var FeedItem = React.createClass({
   render: function() {
     var item = this.props.data;
     return (
-      <div className="feed-item row">
+      <div className="feed-item">
         <div className="small-4 medium-3 columns">
           <CoverImage src={item.cover}/>
         </div>
@@ -17,12 +17,12 @@ var FeedItem = React.createClass({
           <h5>{item.aname}</h5>
           <div className="show-for-medium-up">
             <ReleaseDate year={item.year} month={item.month} day={item.day}/>
-          </div>
+          </div> 
           {/*<ul className="inline-list">
-            <li><a href="#">Love it</a></li>
-            <li><a href="#">Got it</a></li>
-            <li><a href="#">Want it</a></li>
-            <li><a href="#">Hide it</a></li>
+            <li><a href="#">Love</a></li>
+            <li><a href="#">Got</a></li>
+            <li><a href="#">Want</a></li>
+            <li><a href="#">Hide</a></li>
           </ul>*/}
         </div>
       </div>

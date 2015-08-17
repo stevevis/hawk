@@ -45,7 +45,7 @@ mongoose.connect(mongoConfig.uri, mongoConfig.options);
  * Log the progress of the database update as % of artists completed.
  */
 function logProgress() {
-  logger.info("Updated %s out of %s artists (%s\%)", currentStats.artistsUpdated, currentStats.totalArtists, 
+  logger.info("Updated %s out of %s artists (%s\%)", currentStats.artistsUpdated, currentStats.totalArtists,
       Math.floor(currentStats.artistsUpdated / currentStats.totalArtists * 100));
 }
 
@@ -172,7 +172,7 @@ function updateHawkDB(exitOnFinish) {
     createMusicBrainzDB: function(callback) {
       var lastUpdateVersion = lastUpdateStats ? lastUpdateStats.version : "";
       logger.info("Last database update was %s", lastUpdateVersion);
-      
+  
       if (!argv.create) {
         logger.info("Skipping creating a new MusicBrainz database, using last update %s", lastUpdateVersion);
         currentStats.version = lastUpdateVersion;

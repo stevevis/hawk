@@ -7,16 +7,15 @@ var path = require("path");
 var gulp = require("gulp");
 var shortId = require("shortid");
 var plugins = require("gulp-load-plugins")();
-var browserify = require("browserify");
-var watchify = require("watchify");
-var reactify = require("reactify");
-var envify = require("envify");
-var source = require("vinyl-source-stream");
 var parallelize = require("concurrent-transform");
+var requireDir = require("require-dir");
 var AWSConfig = require("./src/config/aws");
 
 // Increase the default max listeners to avoid warnings when we pipe more than 10 files at once
 require("events").EventEmitter.defaultMaxListeners = 100;
+
+// Include tasks defined in the tasks directory
+requireDir("./tasks");
 
 var version = shortId.generate();
 var prod = process.env.NODE_ENV === "production";
@@ -25,7 +24,7 @@ var prod = process.env.NODE_ENV === "production";
 var src = {
   app: "./src/app.jsx",
   style: "./src/styles/main.scss",
-  scss: "./src/styles/**/*.scss",
+  scss: "./src/**/*.scss",
   images: "./src/images/**/*",
   views: "./src/views/**/*",
   server: "./src/server.js",
@@ -83,42 +82,6 @@ function handleError(task) {
 }
 
 /**
- * Browserify and reactify our React app, and optionally watchify it to re-compile on update.
- */
-function bundle(watch) {
-  var bundler = browserify({
-    basedir: __dirname,
-    debug: !prod,
-    entries: [ src.app ],
-    cache: {}, // required by watchify
-    packageCache: {}, // required by watchify
-    fullPaths: watch // this only needs to be true for watchify
-  });
-
-  if (watch) {
-    bundler = watchify(bundler);
-  }
-
-  bundler.transform(reactify);
-  bundler.transform({ global: true }, envify);
-
-  var rebundle = function() {
-    var stream = bundler.bundle();
-    stream.on("error", handleError("browserify"));
-    stream = stream.pipe(source(out.app));
-
-    if (prod) {
-      stream.pipe(plugins.streamify(plugins.uglify()));
-    }
-
-    return stream.pipe(gulp.dest(dist.js));
-  };
-
-  bundler.on("update", rebundle);
-  return rebundle();
-}
-
-/**
  * Gulp Tasks.
  */
 gulp.task("default", [ "clean", "setDev", "vendors", "watch", "dev" ]);
@@ -140,55 +103,18 @@ gulp.task("clean", function() {
 });
 
 /**
- * Compile our React app.
- */
-gulp.task("browserify", function() {
-  return bundle(false);
-});
-
-/**
- * Compile our React app, and re-compile on update.
- */
-gulp.task("browserify-watch", function() {
-  return bundle(true);
-});
-
-/**
  * Compile our SASS stylesheets.
  */
 gulp.task("scss", function() {
   return plugins.rubySass(src.style, {
     loadPath: scssLoadPath,
-    compass: true
+    compass: true,
+    sourcemap: true,
+    precision: 10
   })
   .pipe(plugins.if(prod, plugins.minifyCss()))
+  .pipe(plugins.if(!prod, plugins.sourcemaps.write()))
   .pipe(gulp.dest(dist.css));
-});
-
-/**
- * Minify and concatenate our vendor JS and CSS.
- */
-gulp.task("vendors", [ "css", "head", "js" ]);
-
-gulp.task("css", function() {
-  return gulp.src(src.vendor.css)
-    .pipe(plugins.if(prod, plugins.minifyCss()))
-    .pipe(plugins.concat(out.vendor.css))
-    .pipe(gulp.dest(dist.css));
-});
-
-gulp.task("head", function() {
-  return gulp.src(src.vendor.head)
-    .pipe(plugins.if(prod, plugins.uglify()))
-    .pipe(plugins.concat(out.vendor.head))
-    .pipe(gulp.dest(dist.js));
-});
-
-gulp.task("js", function() {
-  return gulp.src(src.vendor.js)
-    .pipe(plugins.if(prod, plugins.uglify()))
-    .pipe(plugins.concat(out.vendor.js))
-    .pipe(gulp.dest(dist.js));
 });
 
 /**
@@ -293,7 +219,7 @@ gulp.task("dev", [ "vendors", "watch" ], function() {
       NODE_ENV: "development"
     },
     execMap: {
-      "js": "node --harmony"
+      "js": "node"
     },
     ignore: [
       ".git",
@@ -308,6 +234,6 @@ gulp.task("dev", [ "vendors", "watch" ], function() {
     // Give the server a chance to restart and connect to databases etc before reloading the page
     setTimeout(function() {
       plugins.livereload.reload();
-    }, 3000);
+    }, 2000);
   });
 });

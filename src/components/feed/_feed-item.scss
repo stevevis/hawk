@@ -1,0 +1,28 @@
+.feed-item {
+  margin: 1rem 0;
+
+  // Release title
+  h4 {
+    @include single-line;
+    color: $primary-color-dark;
+  }
+
+  // Artist name
+  h5 {
+    @include single-line;
+  }
+
+  // Release date
+  h6 {
+    @include single-line;
+    color: $charcoal;
+  }
+
+  .inline-list {
+    color: $pinkrose-dark;
+
+    li:first-child {
+      margin-left: 0;
+    }
+  }
+}

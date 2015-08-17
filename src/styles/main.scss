@@ -1,7 +1,11 @@
 @import "foundation_settings";
 @import "foundation";
-@import "hawk_settings";
 @import "compass/css3";
+
+@import "hawk_settings";
+@import "hawk_mixins";
+
+@import "../components/feed";
 
 /***** Generic Page Layout *****/
 
@@ -159,12 +163,6 @@ span.primary {
   }
 }
 
-@mixin ghost-block {
-  background-color: rgba($ghost, .9);
-  padding: 1rem;
-  margin-bottom: 1rem;
-}
-
 .login-form {
   @include ghost-block;
 }
@@ -174,12 +172,6 @@ span.primary {
 }
 
 /***** Release Feed Page *****/
-
-@mixin single-line {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
 
 .feed {
   padding: 1rem 0;
@@ -191,35 +183,6 @@ span.primary {
   ul {
     margin: 0;
   }
-
-  .feed-item {
-    margin: 1rem 0;
-  }
-
-  // Release title
-  h4 {
-    color: $primary-color-dark;
-    @include single-line;
-  }
-
-  // Artist name
-  h5 {
-    @include single-line;
-  }
-
-  // Release date
-  h6 {
-    color: $charcoal;
-    @include single-line;
-  }
-
-  .inline-list > li:first-child {
-    margin-left: 0;
-  }
-
-  .inline-list > li > a {
-    color: $pinkrose-dark;
-  }
 }
 
 
@@ -227,22 +190,6 @@ span.primary {
 
 .watch {
   padding-top: 1rem;
-
-  @mixin big-input {
-    font-size: 2rem;
-    background: none;
-    border: 0;
-    border-bottom: 1px solid $gainsboro;
-    font-weight: $font-weight-normal;
-
-    @include input-placeholder {
-      color: $placeholder-color;
-    }
-
-    @media #{$medium-up} {
-      font-size: 3.5rem;
-    }
-  }
 
   .input-artist {
     @include big-input;

@@ -82,7 +82,7 @@ var ArtistSelector = React.createClass({
           buttonClasses += " watching";
         }
 
-        artistElements.push (
+        artistElements.push(
           <li className={className} ref={artist._id} key={artist._id} onMouseEnter={this.handleMouseEnter.bind(this, artist)}>
             <div className="small-8 large-9 columns">
               <h4>{artist.name}</h4>
@@ -99,7 +99,7 @@ var ArtistSelector = React.createClass({
         className = "artist";
       }.bind(this));
 
-      artistElements.push(<li className="artist-spacer" key="bottom-spacer"></li>); 
+      artistElements.push(<li className="artist-spacer" key="bottom-spacer"></li>);
     } else {
       errorMessage = ( <h6 className="text-center">No results to show</h6> );
     }
@@ -119,7 +119,7 @@ var ArtistSelector = React.createClass({
         {errorMessage}
       </div>
     );
-  },
+  }
 });
 
 module.exports = ArtistSelector;

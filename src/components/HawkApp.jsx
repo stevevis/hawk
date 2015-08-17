@@ -1,36 +1,40 @@
 "use strict";
 
-var React = require("react");
-var RouteHandler = require("react-router").RouteHandler;
+import React from "react";
+import RouteHandler from "react-router";
 
 // Components
-var TopBar = require("./nav/TopBar.jsx");
+import TopBar from "./nav/TopBar.jsx";
 
 // Actions
-var UserActions = require("../actions/UserActions");
+import UserActions from "../actions/UserActions";
 
-var HawkApp = React.createClass({
+class HawkApp extends React.Component {
 
-  componentDidMount: function() {
+  componentDidMount() {
     // Initialize Foundation
     $(document).foundation();
 
     // Initialize the user store
     UserActions.getUserSuccess(this.props.user);
-  },
+  }
 
-  render: function() {
+  render() {
     return (
       <div className="hawk-wrapper">
         <div className="nav-wrapper fixed">
           <TopBar {...this.props}/>
         </div>
         <div className="content-wrapper">
-          <RouteHandler {...this.props}/>
+          <RouteHandler.RouteHandler {...this.props}/>
         </div>
       </div>
     );
-  },
-});
+  }
+}
 
-module.exports = HawkApp;
+HawkApp.propTypes = {
+  user: React.PropTypes.object
+};
+
+export default HawkApp;

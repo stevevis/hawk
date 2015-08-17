@@ -10,7 +10,7 @@ var livereload = require("koa-livereload");
 var responseTime = require("koa-response-time");
 var koaBody = require("koa-body");
 var mongoose = require("mongoose");
-require("node-jsx").install({ extension: ".jsx" });
+require("babel/register");
 
 // Local dependencies
 var logger = require("./config/logger");

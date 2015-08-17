@@ -19,19 +19,34 @@ var Feed = React.createClass({
       feed = FeedStore.getFeed();
     }
 
-    return { 
+    return {
       feed: feed
     };
   },
 
   componentDidMount: function() {
-    FeedStore.addChangeListener(this.onFeedChange);
-    window.addEventListener("scroll", this.handleScroll);
+    FeedStore.addChangeListener(this._onFeedChange);
+    window.addEventListener("scroll", this._handleScroll);
   },
 
   componentWillUnmount: function() {
-    FeedStore.removeChangeListener(this.onFeedChange);
-    window.removeEventListener("scroll", this.handleScroll);
+    FeedStore.removeChangeListener(this._onFeedChange);
+    window.removeEventListener("scroll", this._handleScroll);
+  },
+
+  _onFeedChange: function() {
+    this.setState({
+      updating: false,
+      feed: FeedStore.getFeed()
+    });
+  },
+
+  _handleScroll: function() {
+    if (window.pageYOffset + window.innerHeight + WINDOW_Y_OFFSET_LOAD_MORE > $(".feed").outerHeight() &&
+        FeedStore.getNextPageNumber() && !this.state.updating) {
+      this.state.updating = true;
+      FeedActions.getFeed(FeedStore.getNextPageNumber(), FeedStore.getPageSize());
+    }
   },
 
   render: function() {
@@ -47,28 +62,17 @@ var Feed = React.createClass({
           <div className="small-12 medium-10 large-9 medium-centered columns">
             <ul>
               {this.state.feed.map(function(item) {
-                 return <FeedItem key={item.rid} data={item}/>;
+                return (
+                  <div className="row" key={item.rid}>
+                    <FeedItem data={item}/>
+                  </div>
+                );
               })}
             </ul>
           </div>
         </div>
       </div>
     );
-  },
-
-  onFeedChange: function() {
-    this.setState({ 
-      updating: false,
-      feed: FeedStore.getFeed()
-    });
-  },
-
-  handleScroll: function() {
-    if (window.pageYOffset + window.innerHeight + WINDOW_Y_OFFSET_LOAD_MORE > $(".feed").outerHeight() &&
-        FeedStore.getNextPageNumber() && !this.state.updating) {
-      this.state.updating = true;
-      FeedActions.getFeed(FeedStore.getNextPageNumber(), FeedStore.getPageSize());
-    }
   }
 });
 

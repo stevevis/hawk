@@ -7,7 +7,7 @@ var Watch = require("../../components/Watch.jsx");
 
 var API_PREFIX = "api";
 
-/* 
+/*
  * The master routes list - We use the React components directly because browserify won't include them if we load them
  * dynamically, but we can just store the Koa controllers as strings and load them dynamically since they are only used
  * on the server.

@@ -1,0 +1,27 @@
+@mixin single-line {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@mixin ghost-block {
+  background-color: rgba($ghost, .9);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+@mixin big-input {
+  font-size: 2rem;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid $gainsboro;
+  font-weight: $font-weight-normal;
+
+  @include input-placeholder {
+    color: $placeholder-color;
+  }
+
+  @media #{$medium-up} {
+    font-size: 3.5rem;
+  }
+}

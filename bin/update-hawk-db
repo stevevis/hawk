@@ -172,7 +172,7 @@ function updateHawkDB(exitOnFinish) {
     createMusicBrainzDB: function(callback) {
       var lastUpdateVersion = lastUpdateStats ? lastUpdateStats.version : "";
       logger.info("Last database update was %s", lastUpdateVersion);
-  
+
       if (!argv.create) {
         logger.info("Skipping creating a new MusicBrainz database, using last update %s", lastUpdateVersion);
         currentStats.version = lastUpdateVersion;

@@ -10,7 +10,7 @@ var config = require("./config");
 /**
  * Minify and concatenate our vendor JS and CSS.
  */
-gulp.task("vendors", [ "css", "head", "js" ]);
+gulp.task("vendors", [ "css", "headjs", "bodyjs" ]);
 
 gulp.task("css", function() {
   return gulp.src(config.src.vendor.css)
@@ -19,14 +19,14 @@ gulp.task("css", function() {
     .pipe(gulp.dest(config.dist.css));
 });
 
-gulp.task("head", function() {
+gulp.task("headjs", function() {
   return gulp.src(config.src.vendor.head)
     .pipe(gulpif(config.isProd, uglify()))
     .pipe(concat(config.out.vendor.head))
     .pipe(gulp.dest(config.dist.js));
 });
 
-gulp.task("js", function() {
+gulp.task("bodyjs", function() {
   return gulp.src(config.src.vendor.js)
     .pipe(gulpif(config.isProd, uglify()))
     .pipe(concat(config.out.vendor.js))

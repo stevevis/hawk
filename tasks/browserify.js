@@ -29,17 +29,12 @@ function rebundle(bundler) {
     .pipe(gulp.dest(config.dist.js));
 }
 
-/**
- * Browserify our React app, and optionally watchify it to re-compile on update.
- */
 function bundle(watch) {
-  // Browserify options
   var opts = {
     debug: !config.isProd,
     entries: [ config.src.app ]
   };
 
-  // Merge with watchify options if we need to watch
   if (watch) {
     opts = assign({}, watchify.args, opts);
   }
@@ -48,7 +43,7 @@ function bundle(watch) {
 
   if (watch) {
     bundler = watchify(bundler);
-    bundler.on("update", rebundle.bind(this, bundler)); // on any dep update, runs the bundler
+    bundler.on("update", rebundle.bind(this, bundler));
   }
 
   bundler.transform(babelify);

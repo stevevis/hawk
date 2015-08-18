@@ -18,12 +18,12 @@ var Home = React.createClass({
   render: function() {
     var loginMessage = <h6>Got an account? Log in!</h6>;
     if (this.props.errors.loginError) {
-      loginMessage = <h6 className="error">{{__html: this.props.errors.loginError}}</h6>;
+      loginMessage = <h6 className="error">{this.props.errors.loginError}</h6>;
     }
 
     var signupMessage = <h6>New to Hawk? Sign up!</h6>;
     if (this.props.errors.signupError) {
-      signupMessage = <h6 className="error">{{__html: this.props.errors.signupError}}</h6>;
+      signupMessage = <h6 className="error">{this.props.errors.signupError}</h6>;
     }
 
     return (

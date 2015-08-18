@@ -1,7 +1,7 @@
 "use strict";
 
 import React from "react";
-import RouteHandler from "react-router";
+import { RouteHandler } from "react-router";
 
 // Components
 import TopBar from "./nav/TopBar.jsx";
@@ -26,7 +26,7 @@ class HawkApp extends React.Component {
           <TopBar {...this.props}/>
         </div>
         <div className="content-wrapper">
-          <RouteHandler.RouteHandler {...this.props}/>
+          <RouteHandler {...this.props}/>
         </div>
       </div>
     );

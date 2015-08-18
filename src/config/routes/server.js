@@ -24,6 +24,7 @@ var secure = function *(next) {
   if (this.isAuthenticated()) {
     yield next;
   } else {
+    logger.warn("User is not authorized for this route");
     this.redirect("/");
   }
 };

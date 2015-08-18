@@ -26,10 +26,12 @@ exports.init = function(app) {
     // If the view isn't set on a GET request it means no controller matched
     if (!this.state.view) {
       logger.warn("Render function called with no view set, redirecting to home:, path=%s", this.path);
-      return this.redirect("/");
+      this.redirect("/");
+      return;
     }
 
     var content = React.renderToString(React.createElement(this.state.reactComponent, this.state.data));
     yield this.render(this.state.view, { html: content, _data: JSON.stringify(this.state.data) });
+    return;
   });
 };

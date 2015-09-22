@@ -1,21 +1,19 @@
 "use strict";
 
-var React = require("react");
-var Navigation = require("react-router").Navigation;
-var Footer = require("./home/Footer.jsx");
-var Login = require("./home/Login.jsx");
-var SignUp = require("./home/SignUp.jsx");
+import React from "react";
+import Footer from "./home/Footer.jsx";
+import Login from "./home/Login.jsx";
+import SignUp from "./home/SignUp.jsx";
 
-var Home = React.createClass({
-  mixins: [Navigation],
+class Home extends React.Component {
 
-  componentDidMount: function() {
+  componentDidMount() {
     if (this.props.user) {
       this.replaceWith("feed");
     }
-  },
+  }
 
-  render: function() {
+  render() {
     var loginMessage = <h6>Got an account? Log in!</h6>;
     if (this.props.errors.loginError) {
       loginMessage = <h6 className="error">{this.props.errors.loginError}</h6>;
@@ -51,6 +49,11 @@ var Home = React.createClass({
       </div>
     );
   }
-});
+}
 
-module.exports = Home;
+Home.propTypes = {
+  errors: React.PropTypes.object.isRequired,
+  user: React.PropTypes.object
+};
+
+export default Home;

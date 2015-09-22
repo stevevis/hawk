@@ -40,7 +40,7 @@ var TopBar = React.createClass({
   render: function() {
     var titleLink = "hawk";
     var menuToggle = "";
-    
+
     if (this.props.user) {
       titleLink = "feed";
       menuToggle = <li className="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>;
@@ -61,7 +61,7 @@ var TopBar = React.createClass({
         </section>
       </nav>
     );
-  },
+  }
 });
 
 module.exports = TopBar;

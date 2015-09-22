@@ -1,23 +1,22 @@
 "use strict";
 
 // Dependencies
-var koa = require("koa");
-var path = require("path");
-var staticCache = require("koa-static-cache");
-var errorHandler = require("koa-error");
-var requestLogger = require("koa-logger");
-var livereload = require("koa-livereload");
-var responseTime = require("koa-response-time");
-var koaBody = require("koa-body");
-var mongoose = require("mongoose");
-require("babel/register");
+import koa from "koa";
+import path from "path";
+import staticCache from "koa-static-cache";
+import errorHandler from "koa-error";
+import requestLogger from "koa-logger";
+import livereload from "koa-livereload";
+import responseTime from "koa-response-time";
+import koaBody from "koa-body";
+import mongoose from "mongoose";
 
 // Local dependencies
-var logger = require("./config/logger");
-var router = require("./config/routes/server");
-var mongoConfig = require("./config/mongo");
-var authentication = require("./config/authentication");
-var render = require("./config/render");
+import logger from "./config/logger";
+import router from "./config/routes/server";
+import mongoConfig from "./config/mongo";
+import authentication from "./config/authentication";
+import render from "./config/render";
 
 // Connect to Mongo
 mongoose.connect(mongoConfig.uri, mongoConfig.options);
@@ -70,10 +69,6 @@ router.init(app);
 // Initalize the renderer middleware that will render the React component and the data into the view.
 render.init(app);
 
-// Start the server if this script wasn"t required by another script e.g. a function test script
-if (!module.parent) {
-  app.listen(port);
-  logger.info("Server started, listening on port: " + port);
-}
-
+app.listen(port);
+logger.info("Server started, listening on port: " + port);
 logger.info("Server environment: " + app.env);

@@ -11,7 +11,7 @@ var base = {
     scss: "./src/styles/**/*.scss",
     images: "./src/images/**/*",
     views: "./src/views/**/*",
-    server: "./src/server.js",
+    server: "./src/babel-server.js",
     vendor: {
       css: [
       ],

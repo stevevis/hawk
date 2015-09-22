@@ -63,7 +63,7 @@ var Watch = React.createClass({
   },
 
   clearArtists: function() {
-    this.setState({ artists: [] });
+    this.setState({ artists: []});
   },
 
   render: function() {
@@ -72,7 +72,7 @@ var Watch = React.createClass({
         <div className="row artist-search">
           <form>
             <div className="small-12 large-10 large-centered columns">
-              <input type="text" className="input-artist" placeholder="Who's your favorite artist?" autoFocus="true" 
+              <input type="text" className="input-artist" placeholder="Who's your favorite artist?" autoFocus="true"
                   ref="searchInput" onChange={this.handleChange}/>
               <svg className="loading-svg" height="1" width="100%">
                 <line className="loading-svg-line" x1="0" y1="0" x2="0" y2="0"/>

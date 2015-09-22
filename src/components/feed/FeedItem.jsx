@@ -17,7 +17,7 @@ var FeedItem = React.createClass({
           <h5>{item.aname}</h5>
           <div className="show-for-medium-up">
             <ReleaseDate year={item.year} month={item.month} day={item.day}/>
-          </div> 
+          </div>
           {/*<ul className="inline-list">
             <li><a href="#">Love</a></li>
             <li><a href="#">Got</a></li>

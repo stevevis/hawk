@@ -1,10 +1,10 @@
 "use strict";
 
-var React = window.React = require("react");
-var Router = require("react-router");
+import React from "react";
+import Router from"react-router";
 
 // Load the client routes
-var routes = require("./config/routes/client");
+import routes from "./config/routes/client";
 
 // Parse the properties sent by the server
 var data = JSON.parse(document.getElementById("data").innerHTML);

@@ -10,7 +10,7 @@ var NotFoundRouter = Router.NotFoundRoute;
 // The master routes module, we'll add the react routes to this
 var routes = require("./routes.js");
 
-// Conver the master routes list into React routes
+// Convert the master routes list into React routes
 function generateReactRoutes(parent) {
   var children = [];
 

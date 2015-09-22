@@ -58,7 +58,7 @@ exports.del = function *() {
     this.status = 404;
     return;
   }
-  
+
   // Update the user's watching list
   user.watching.splice(index, 1);
 

@@ -5,19 +5,21 @@ FROM
     r.id            AS _id,
     r.gid           AS gid,
     r.name          AS name,
+    rt.name         AS type,
     rg.gid          AS rgid,
     rc.date_year    AS year,
     rc.date_month   AS month,
     rc.date_day     AS day,
     ROW_NUMBER()
-      OVER (PARTITION BY r.name
+      OVER (PARTITION BY rg.id
         ORDER BY rc.date_year ASC NULLS LAST, rc.date_month ASC NULLS LAST, rc.date_day ASC NULLS LAST, r.id ASC)
       AS rank
   FROM musicbrainz.release AS r, musicbrainz.release_group AS rg, musicbrainz.release_country AS rc,
-    musicbrainz.artist_credit_name AS acn
+    musicbrainz.artist_credit_name AS acn, musicbrainz.release_group_primary_type as rt
   WHERE
     r.release_group = rg.id AND
-    rg.type IN (1, 3) AND
+    rg.type IN (1, 2, 3) AND
+    rg.type = rt.id AND
     r.artist_credit = acn.artist_credit AND
     r.id = rc.release AND
     acn.artist = $1 AND

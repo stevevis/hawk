@@ -39,8 +39,7 @@ var WatchStore = assign({}, EventEmitter.prototype, {
 });
 
 AppDispatcher.register(function(action) {
-  
-  switch(action.type) {
+  switch (action.type) {
     case ActionType.GET_FEED_SUCCESS:
       if (action.page === 0) {
         _hasChanged = false;
@@ -52,8 +51,7 @@ AppDispatcher.register(function(action) {
       WatchStore.emitChange();
       break;
 
-    default: 
-      // no op
+    default: // no op
   }
 });
 

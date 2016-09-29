@@ -58,6 +58,16 @@ function initKoaRouter(app) {
   generateKoaRoutes(router, routes.app);
   generateKoaRoutes(router, routes.action);
   generateKoaRoutes(router, routes.api);
+
+  var controller = require("../../controllers/API/UserFeedController");
+  _.each(_.map(controller.methods, toLowerCase), function(method) {
+    if (controller.secure) {
+      router[method](controller.path, secure, controller[method]);
+    } else {
+      router[method](controller.path, controller[method]);
+    }
+  });
+
   app.use(router.routes());
 }
 

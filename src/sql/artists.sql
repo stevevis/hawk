@@ -6,6 +6,6 @@ FROM musicbrainz.release AS r, musicbrainz.artist_credit_name AS acn, musicbrain
   musicbrainz.release_group AS rg
 WHERE
   r.artist_credit = acn.artist_credit AND a.id = acn.artist AND
-  r.language = 120 AND r.status = 1 AND r.release_group = rg.id AND rg.type IN (1, 3)
+  r.language = 120 AND r.status = 1 AND r.release_group = rg.id AND rg.type IN (1, 2, 3)
 GROUP BY a.id, a.gid, a.name
 ORDER BY a.id ASC;

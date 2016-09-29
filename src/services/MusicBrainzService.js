@@ -137,7 +137,7 @@ MusicBrainzService.prototype.createDatabase = function(lastVersion, callback) {
     },
     waitUntilFinished: function(callback) {
       logger.info("Waiting until update job finishes on MusicBrainz server");
-      execSSHClientUntil(pgConfig.commands.checkInitDbProcess, "0", 10 * 60 * 1000, callback);
+      execSSHClientUntil(pgConfig.commands.checkInitDbProcess, "0", 5 * 60 * 1000, callback);
     },
     sendNotification: function(callback) {
       execSSHClient(pgConfig.commands.getLastLineOfLog, function(err, output) {

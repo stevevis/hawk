@@ -40,7 +40,7 @@ var routes = {
         secure: true
       },
       {
-        name: "track",
+        name: "track", // Can't call this watch because in Firefox there is an object.watch method...
         path: "watch",
         methods: ["GET"],
         handler: Watch,
@@ -101,13 +101,13 @@ var routes = {
         controller: "API/UserWatchController",
         secure: true
       },
-      {
-        mame: "user_feed",
-        path: "user/:userId/feed",
-        methods: ["GET"],
-        controller: "API/UserFeedController",
-        secure: true
-      }
+      // {
+      //   name: "user_feed",
+      //   path: "user/:userId/feed",
+      //   methods: ["GET"],
+      //   controller: "API/UserFeedController",
+      //   secure: true
+      // }
     ]
   }
 };

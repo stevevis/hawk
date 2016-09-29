@@ -43,15 +43,13 @@ var UserStore = assign({}, EventEmitter.prototype, {
 });
 
 AppDispatcher.register(function(action) {
-
-  switch(action.type) {
+  switch (action.type) {
     case ActionType.GET_USER_SUCCESS:
       updateUser(action.user);
       UserStore.emitChange();
       break;
 
-    default: 
-      // no op
+    default: // no op
   }
 });
 

@@ -74,15 +74,13 @@ var FeedStore = assign({}, EventEmitter.prototype, {
 });
 
 AppDispatcher.register(function(action) {
-  
-  switch(action.type) {
+  switch (action.type) {
     case ActionType.GET_FEED_SUCCESS:
       updateFeed(action.feed, action.page);
       FeedStore.emitChange();
       break;
 
-    default: 
-      // no op
+    default: // no op
   }
 });
 

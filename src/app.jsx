@@ -1,15 +1,7 @@
-"use strict";
+import React from "react";
+import ReactDOM from "react-dom";
 
-var React = window.React = require("react");
-var Router = require("react-router");
+// The top level app component
+import Hawk from "./components/Hawk.jsx";
 
-// Load the client routes
-var routes = require("./config/routes/client");
-
-// Parse the properties sent by the server
-var data = JSON.parse(document.getElementById("data").innerHTML);
-
-// Initialize the React router
-Router.run(routes.react, Router.HistoryLocation, function(Handler) {
-  React.render(React.createElement(Handler, data), document.getElementById("hawk"));
-});
+ReactDOM.render(<Hawk/>, document.getElementById("hawk"));

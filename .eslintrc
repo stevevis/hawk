@@ -1,0 +1,47 @@
+{
+  "env": {
+    "browser": true,
+    "node": true,
+    "amd": false,
+    "mocha": false,
+    "jasmine": true,
+    "es6": true,
+    "jquery": true
+  },
+
+  "parser": "babel-eslint",
+
+  "plugins": [
+    "react"
+  ],
+
+  "extends": ["eslint:all", "plugin:react/recommended"],
+
+  "rules": {
+    "no-console": "warn",
+    "no-inline-comments": "off",
+    "no-sync": "off",
+    "no-ternary": "off",
+    "arrow-body-style": ["error", "always"],
+    "class-methods-use-this": "off",
+    "dot-location": ["error", "property"],
+    "multiline-ternary": "off",
+    "no-warning-comments": ["warn", { "terms": ["todo", "fixme", "xxx"], "location": "start" }],
+    "func-style": "off",
+    "id-length": ["error", { "min": 2, "exceptions": ["_"] }],
+    "indent": ["error", 2],
+    "line-comment-position": "off",
+    "max-len": ["error", 120, { "ignoreUrls": true }],
+    "newline-after-var": "off",
+    "object-curly-newline": "off",
+    "object-curly-spacing": [2, "always", { "objectsInObjects": false, "arraysInObjects": false }],
+    "object-property-newline": ["error", { "allowMultiplePropertiesPerLine": true }],
+    "one-var": ["error", "never"],
+    "padded-blocks": ["error", "never"],
+    "quote-props": ["error", "as-needed", { "keywords": true, "numbers": true, "unnecessary": false }],
+    "require-jsdoc": "off",
+    "sort-imports": "off",
+    "sort-keys": "off",
+    "space-before-function-paren": ["error", "never"]
+  }
+}

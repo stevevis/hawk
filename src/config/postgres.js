@@ -1,11 +1,12 @@
-"use strict";
+/* eslint no-process-env: "off" */
+/* eslint max-len: "off" */
 
-var _ = require("lodash");
-var pg = require("pg");
+const _ = require("lodash");
+const pg = require("pg");
 
-var env = process.env.NODE_ENV = process.env.NODE_ENV || "development";
+const env = process.env.NODE_ENV = process.env.NODE_ENV || "development";
 
-var base = {
+const base = {
   connect: {
     user: "musicbrainz",
     password: "musicbrainz",
@@ -20,10 +21,10 @@ var base = {
   }
 };
 
-var specific = {
+const specific = {
   development: {
     connect: {
-      host: "52.24.29.248"
+      host: "52.33.43.252"
     }
   },
   production: {

@@ -1,12 +1,18 @@
-# Default application configuration that all configurations inherit from.
+# Default scss lint - https://github.com/brigade/scss-lint/blob/master/config/default.yml
 
-scss_files: "**/*.scss"
+# List of gem names to load custom linters from (make sure they are already
+# installed)
+plugin_gems: []
 
 linters:
   BangFormat:
     enabled: true
     space_before_bang: true
     space_after_bang: false
+
+  BemDepth:
+    enabled: false
+    max_elements: 1
 
   BorderZero:
     enabled: true
@@ -41,17 +47,20 @@ linters:
   EmptyRule:
     enabled: true
 
+  ExtendDirective:
+    enabled: false
+
   FinalNewline:
     enabled: true
     present: true
 
   HexLength:
     enabled: true
-    style: short # or 'long'
+    style: long # or 'short'
 
   HexNotation:
     enabled: true
-    style: lowercase # or 'uppercase'
+    style: uppercase # or 'lowercase'
 
   HexValidation:
     enabled: true
@@ -89,6 +98,7 @@ linters:
   NestingDepth:
     enabled: true
     max_depth: 3
+    ignore_parent_selectors: false
 
   PlaceholderInExtend:
     enabled: true
@@ -108,8 +118,7 @@ linters:
       'ms', 's',                               # Duration
       'Hz', 'kHz',                             # Frequency
       'dpi', 'dpcm', 'dppx',                   # Resolution
-      '%',                                     # Other
-    ]
+      '%']                                     # Other
     properties: {}
 
   PropertySortOrder:
@@ -130,7 +139,7 @@ linters:
 
   SelectorDepth:
     enabled: true
-    max_depth: 3
+    max_depth: 4
 
   SelectorFormat:
     enabled: true
@@ -168,9 +177,12 @@ linters:
 
   StringQuotes:
     enabled: true
-    style: double_quotes
+    style: double_quotes # or single_quotes
 
   TrailingSemicolon:
+    enabled: true
+
+  TrailingWhitespace:
     enabled: true
 
   TrailingZero:
@@ -183,7 +195,7 @@ linters:
     enabled: true
 
   UrlFormat:
-    enabled: true
+    enabled: false
 
   UrlQuotes:
     enabled: true

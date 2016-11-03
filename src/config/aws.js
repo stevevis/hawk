@@ -1,10 +1,10 @@
-"use strict";
+/* eslint no-process-env: "off" */
 
-var _ = require("lodash");
+const _ = require("lodash");
 
-var env = process.env.NODE_ENV = process.env.NODE_ENV || "development";
+const env = process.env.NODE_ENV = process.env.NODE_ENV || "development";
 
-var base = {
+const base = {
   EC2: {
     region: "us-west-2",
     apiVersion: "2014-10-02",
@@ -33,11 +33,11 @@ var base = {
   }
 };
 
-var specific = {
+const specific = {
   development: {
     EC2: {
       musicBrainz: {
-        privateIp: "52.10.63.223"
+        privateIp: "52.33.43.252"
       }
     }
   },

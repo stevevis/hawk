@@ -1,0 +1,15 @@
+@import "main";
+
+h1 {
+  color: $brand-primary;
+}
+
+.hawk-wrapper {
+  padding: 1em;
+}
+
+.hawk-image {
+  background: url("./images/hawk.png");
+  height: 64px;
+  width: 64px;
+}
